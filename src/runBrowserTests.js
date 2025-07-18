@@ -1,6 +1,6 @@
 import { startServer, stopServer } from './browserTestServer.js';
 import puppeteer from 'puppeteer';
-import { LOG_LEVELS } from './utils/logLevels.js';
+import LOG_LEVELS from './utils/logLevels.js';
 
 export default async ({
   testFile,

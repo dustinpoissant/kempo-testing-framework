@@ -2,7 +2,7 @@ import findTests from './findTests.js';
 import runTests from './runTests.js';
 import runBrowserTests from './runBrowserTests.js';
 import path from 'path';
-import { LOG_LEVELS } from './utils/logLevels.js';
+import LOG_LEVELS from './utils/logLevels.js';
 
 export default async (flags, args) => {
   const [ suiteFilter, testFilter ] = args;
