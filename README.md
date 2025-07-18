@@ -51,20 +51,30 @@ Run the GUI interface:
 npx kempo --gui
 ```
 
-You can also add npm scripts to your `package.json` for convenience:
+### Using npm Scripts (Optional)
+
+You can add npm scripts to your `package.json` for convenience:
 
 ```json
 {
   "scripts": {
-    "gui": "npx kempo --gui"
+    "tests": "npx kempo",
+    "tests:gui": "npx kempo --gui",
+    "tests:browser": "npx kempo -b",
+    "tests:node": "npx kempo -n"
   }
 }
 ```
 
 Then run with:
 ```bash
-npm run gui
+npm run tests           # Run all tests
+npm run tests:gui       # Start GUI
+npm run tests:browser   # Run only browser tests
+npm run tests:node      # Run only node tests
 ```
+
+**Important:** npm scripts with npx don't reliably pass additional arguments. If you need to use flags like `--show-browser`, `--verbose`, or filters, use `npx kempo` directly instead of npm scripts.
 
 ## Test File Naming
 

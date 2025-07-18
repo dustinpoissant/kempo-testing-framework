@@ -168,6 +168,11 @@ export default async (flags, args) => {
   const startUrl = `http://localhost:${port}`;
   console.log(`Server running at ${startUrl}`);
   
+  // Show platform-specific instructions for stopping the server
+  const platformName = platform();
+  const stopKey = platformName === 'darwin' ? 'Cmd+C' : 'Ctrl+C';
+  console.log(`Press ${stopKey} to stop the testing ui`);
+  
   const openBrowser = url => {
     const platformName = platform();
     let command;
