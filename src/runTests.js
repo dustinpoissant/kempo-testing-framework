@@ -60,7 +60,7 @@ export default async ({
     });
     await afterEach(log);
     if(!result.passed){ // If the test failed, elevate all logs to a level 2
-      result.logs.forEach(log => log.level = 2)
+      result.logs.forEach(log => log.level = 2);
     }
     results.tests[name] = result;
     await wait(delay);
@@ -78,4 +78,4 @@ export default async ({
   });
   
   return results;
-}
+};

@@ -14,8 +14,8 @@ export default async (flags, args) => {
     const basePath = req.url.split('?')[0];
     
     /*
-     * Custom API Endpoints
-     */
+      Custom API Endpoints
+    */
     if(basePath === '/essential.css'){
       res.writeHead(200, { 'Content-Type': 'text/css' });
       res.end(await readFile(path.join(__dirname, '../node_modules/essentialcss/dist/essential.min.css'), 'utf8'));
@@ -109,7 +109,7 @@ export default async (flags, args) => {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Test file not found' }));
       }
-    } else if( ['/favicon.ico', '/.well-known/appspecific/com.chrome.devtools.json'].includes(basePath)){
+    } else if(['/favicon.ico', '/.well-known/appspecific/com.chrome.devtools.json'].includes(basePath)){
       res.writeHead(404);
       res.end('');
     } else {
@@ -136,8 +136,8 @@ export default async (flags, args) => {
         }
         
         /*
-         * Static File Content Type Mapping
-         */
+          Static File Content Type Mapping
+        */
         const ext = path.extname(filePath).toLowerCase();
         let contentType = 'text/plain';
         switch (ext) {
@@ -161,8 +161,8 @@ export default async (flags, args) => {
   });
   
   /*
-   * Server Startup and Browser Launch
-   */
+    Server Startup and Browser Launch
+  */
   const port = flags['gui-port'] || 4000;
   server.listen(port);
   const startUrl = `http://localhost:${port}`;
@@ -172,7 +172,7 @@ export default async (flags, args) => {
     const platformName = platform();
     let command;
     
-    switch(platformName) {
+    switch(platformName){
       case 'win32':
         command = `start ${url}`;
         break;
@@ -197,4 +197,4 @@ export default async (flags, args) => {
   };
   
   openBrowser(startUrl);
-}
+};

@@ -15,6 +15,12 @@ All files served by the GUI should be in the `gui/` directory, with the exceptio
 Use multi-line comments to separate code into logical sections. Group related functionality together.
   - Example: In Lit components, group lifecycle callbacks, event handlers, public methods, utility functions, and rendering logic separately.
 
+```javascript
+/*
+  Lifecycle Callbacks
+*/
+```
+
 ### Avoid single-use variables/functions
 Avoid defining a variable or function to only use it once; inline the logic where needed. Some exceptions include:
   - recursion
@@ -31,8 +37,11 @@ Use minimal comments. Assume readers understand the language. Some exceptions in
 Do not put random empty lines within code; put them where they make sense for readability, for example:
   - above and below definitions for functions and classes.
   - to help break up large sections of logic to be more readable. If there are 100 lines of code with no breaks, it gets hard to read.
-  - at the end of a file
   - above multi-line comments to indicate the comment belongs to the code below
+
+End each file with an empty line.
+
+End each line with a `;` when possible, even if it is optional.
 
 Avoid unnecessary spacing, for example:
   - after the word `if`

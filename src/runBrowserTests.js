@@ -14,7 +14,7 @@ export default async ({
    */
   const url = await startServer(port);
   
-  if (logLevel >= LOG_LEVELS.VERBOSE) {
+  if(logLevel >= LOG_LEVELS.VERBOSE){
     console.log(`\x1b[90m Browser test server started at ${url}\x1b[0m`);
   }
   
@@ -39,8 +39,8 @@ export default async ({
     await browser.close();
     await stopServer();
     return results;
-  } catch (error) {
+  } catch(error){
     await stopServer();
     throw error;
   }
-}
+};
