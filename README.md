@@ -4,7 +4,7 @@ The Kempo Testing Framework is a simple testing framework built on these princip
 
 - **Test in the right environment:** Code should be tested in the environment it is written for. Code intended to be ran in the browser is tested in the browser; code intended to be ran in Node is tested in Node. And code intended to be ran in either should be tested in both.
 - **No mocks, no shims:** Test the real thing, not a simulation.
-- **Simplicity:** No custom syntax, no learning curve. Just JavaScript functions and three helpers: `log`, `pass`, and `fail`.
+- **Simplicity:** No custom syntax to learn. Just JavaScript functions and three helpers: `log`, `pass`, and `fail`.
 - **Zero learning curve:** If you know JavaScript, you know how to write tests.
 
 It can be run from a web GUI or from the command line.
