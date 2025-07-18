@@ -10,20 +10,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async (flags, args) => {
-  const server = http.createServer( async (req, res) => {
+  const server = http.createServer(async (req, res) => {
     const basePath = req.url.split('?')[0];
     
-    // Custom endpoints
+    /*
+     * Custom API Endpoints
+     */
     if(basePath === '/essential.css'){
       res.writeHead(200, { 'Content-Type': 'text/css' });
-      res.end(await readFile( path.join(__dirname, '../node_modules/essentialcss/dist/essential.min.css'), 'utf8'));
+      res.end(await readFile(path.join(__dirname, '../node_modules/essentialcss/dist/essential.min.css'), 'utf8'));
     } else if(basePath === '/testFiles'){
       try {
         const testFiles = await findTests('', '', true, true);
         
         // Extract test names from Node test files (safe to import in Node.js)
         const nodeTestsWithNames = await Promise.all(
-          testFiles.nodeTests.map(async (file) => {
+          testFiles.nodeTests.map(async file => {
             try {
               // Convert forward slashes back to OS-specific path separators for import
               const normalizedFile = file.replace(/\//g, path.sep);
@@ -133,49 +135,40 @@ export default async (flags, args) => {
           return;
         }
         
-        // Determine content type based on file extension
+        /*
+         * Static File Content Type Mapping
+         */
         const ext = path.extname(filePath).toLowerCase();
         let contentType = 'text/plain';
         switch (ext) {
-          case '.html':
-            contentType = 'text/html';
-            break;
-          case '.js':
-            contentType = 'application/javascript';
-            break;
-          case '.css':
-            contentType = 'text/css';
-            break;
-          case '.json':
-            contentType = 'application/json';
-            break;
-          case '.png':
-            contentType = 'image/png';
-            break;
-          case '.jpg':
-          case '.jpeg':
-            contentType = 'image/jpeg';
-            break;
-          case '.svg':
-            contentType = 'image/svg+xml';
-            break;
+          case '.html': contentType = 'text/html'; break;
+          case '.js': contentType = 'application/javascript'; break;
+          case '.css': contentType = 'text/css'; break;
+          case '.json': contentType = 'application/json'; break;
+          case '.png': contentType = 'image/png'; break;
+          case '.jpg': case '.jpeg': contentType = 'image/jpeg'; break;
+          case '.svg': contentType = 'image/svg+xml'; break;
         }
         
         const fileContent = await readFile(filePath, ext === '.png' || ext === '.jpg' || ext === '.jpeg' ? null : 'utf8');
         res.writeHead(200, { 'Content-Type': contentType });
         res.end(fileContent);
       } catch (error) {
-        // File not found or other error
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('File not found');
       }
     }
   });
+  
+  /*
+   * Server Startup and Browser Launch
+   */
   const port = flags['gui-port'] || 4000;
   server.listen(port);
   const startUrl = `http://localhost:${port}`;
   console.log(`Server running at ${startUrl}`);
-  const openBrowser = (url) => {
+  
+  const openBrowser = url => {
     const platformName = platform();
     let command;
     
@@ -195,7 +188,7 @@ export default async (flags, args) => {
         return;
     }
     
-    exec(command, (error) => {
+    exec(command, error => {
       if (error) {
         console.log(`Failed to open browser: ${error.message}`);
         console.log(`Please manually open your browser and navigate to: ${url}`);

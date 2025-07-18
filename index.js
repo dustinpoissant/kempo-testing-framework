@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-// Map of short flags to their full names
+/*
+ * CLI Flag Mapping
+ */
 const shortFlagMap = {
     'b': 'browser',
     'n': 'node',
@@ -12,8 +14,10 @@ const shortFlagMap = {
     'g': 'gui'
 };
 
+/*
+ * Argument Processing
+ */
 const args = process.argv.slice(2);
-
 const flags = {};
 const remainingArgs = [];
 
@@ -40,10 +44,13 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
+/*
+ * Mode Selection and Execution
+ */
 if (flags.gui) {
     const { default: gui } = await import('./src/gui.js');
     await gui(flags, remainingArgs);
 } else {
-    const { default: cli } = await import('./cli.js');
+    const { default: cli } = await import('./src/cli.js');
     await cli(flags, remainingArgs);
 }

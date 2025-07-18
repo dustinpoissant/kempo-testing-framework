@@ -9,15 +9,20 @@ const __dirname = path.dirname(__filename);
 let server;
 let port;
 
-export const startServer = async (_port = 3000, handler) => {
+export const startServer = async (_port = 3000) => {
   if(!server){
     port = _port;
     server = http.createServer(async (req, res) => {
       const basePath = req.url.split('?')[0]
+      
+      /*
+       * Route Handling
+       */
       if(basePath === '/'){
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(await readFile('../test.html', 'utf8'));
-      } else if( basePath === 'runTests.js'){
+        const testHtmlPath = path.join(__dirname, '..', 'test.html');
+        res.end(await readFile(testHtmlPath, 'utf8'));
+      } else if( basePath === '/runTests.js'){
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         const filePath = path.join(__dirname, 'runTests.js');
         res.end(await readFile(filePath, 'utf8'));
@@ -25,6 +30,9 @@ export const startServer = async (_port = 3000, handler) => {
         res.writeHead(404);
         res.end('');
       } else {
+        /*
+         * Static File Serving
+         */
         try {
           const filePath = `.${basePath}`;
           const fileContent = await readFile(filePath);

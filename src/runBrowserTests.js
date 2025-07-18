@@ -1,6 +1,6 @@
 import { startServer, stopServer } from './browserTestServer.js';
 import puppeteer from 'puppeteer';
-import { LOG_LEVELS } from './logLevels.js';
+import { LOG_LEVELS } from './utils/logLevels.js';
 
 export default async ({
   testFile,
@@ -9,6 +9,9 @@ export default async ({
   port = 3000,
   logLevel
 }) => {
+  /*
+   * Start Test Server
+   */
   const url = await startServer(port);
   
   if (logLevel >= LOG_LEVELS.VERBOSE) {
@@ -16,6 +19,9 @@ export default async ({
   }
   
   try {
+    /*
+     * Launch Browser and Execute Tests
+     */
     const browser = await puppeteer.launch({ 
       headless: !showBrowser,
       devtools: true,
@@ -26,6 +32,10 @@ export default async ({
     await page.goto(`${url}?testFile=${testFile}&filter=${filter}`);
     await page.waitForFunction(() => window.results !== undefined);
     const results = await page.evaluate(() => window.results);
+    
+    /*
+     * Cleanup
+     */
     await browser.close();
     await stopServer();
     return results;

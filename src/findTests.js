@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-async function findFiles(dir, filter = '') {
+const findFiles = async (dir, filter = '') => {
   const results = [];
   const entries = await fs.readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
@@ -22,7 +22,14 @@ async function findFiles(dir, filter = '') {
 }
 
 export default async (suiteFilter, testFilter, browser = true, node = true) => {
+  /*
+   * Find All Test Files
+   */
   const files = await findFiles(process.cwd(), suiteFilter);
+  
+  /*
+   * Filter Test Files by Type
+   */
   const nodeTests = files.filter(file => (file.endsWith('.test.js') || file.endsWith('.node-test.js')) && node);
   const browserTests = files.filter(file => (file.endsWith('.test.js') || file.endsWith('.browser-test.js')) && browser);
   

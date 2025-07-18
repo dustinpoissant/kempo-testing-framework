@@ -2,10 +2,14 @@ import findTests from './findTests.js';
 import runTests from './runTests.js';
 import runBrowserTests from './runBrowserTests.js';
 import path from 'path';
-import { LOG_LEVELS } from './logLevels.js';
+import { LOG_LEVELS } from './utils/logLevels.js';
 
 export default async (flags, args) => {
   const [ suiteFilter, testFilter ] = args;
+  
+  /*
+   * Log Level Configuration
+   */
   let logLevel = LOG_LEVELS.NORMAL;
   if (flags.silent) {
     logLevel = LOG_LEVELS.SILENT;
@@ -23,16 +27,23 @@ export default async (flags, args) => {
     console.log(`[Debug] Log level: ${logLevel}\x1b[0m`);
   }
   
+  /*
+   * Test Configuration
+   */
   const showBrowser = Boolean(flags['show-browser']);
-
   const runBrowser = Boolean(flags.browser);
   const runNode = Boolean(flags.node);
   const shouldRunBrowser = runBrowser || (!runBrowser && !runNode);
   const shouldRunNode = runNode || (!runBrowser && !runNode);
+  
   const {
     nodeTests,
     browserTests
   } = await findTests(suiteFilter, testFilter, shouldRunBrowser, shouldRunNode);
+  
+  /*
+   * Color Configuration
+   */
   const colors = {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
@@ -43,6 +54,10 @@ export default async (flags, args) => {
     gray: '\x1b[90m',
     blue: '\x1b[34m'
   };
+  
+  /*
+   * Node Test Execution
+   */
   const nodeResults = {};
   if(nodeTests.length) {
     for(const file of nodeTests) {
@@ -56,12 +71,10 @@ export default async (flags, args) => {
     }
   }
 
-  // Get port from flags object directly
-  let port = 3000; // Default port
-  if (flags.port) {
-    port = parseInt(flags.port, 10);
-  }
-  
+  /*
+   * Browser Test Execution
+   */
+  const port = flags.port ? parseInt(flags.port, 10) : 3000;
   const browserResults = {};
   if(browserTests.length) {
     for(const testFile of browserTests) {
@@ -77,6 +90,10 @@ export default async (flags, args) => {
       });
     }
   }
+  
+  /*
+   * Results Display
+   */
   if (logLevel >= LOG_LEVELS.SILENT) {
     displayResults('Node', nodeResults, logLevel, colors);
     displayResults('Browser', browserResults, logLevel, colors);
@@ -84,7 +101,7 @@ export default async (flags, args) => {
   }
 }
 
-function displayResults(type, results, logLevel, colors) {
+const displayResults = (type, results, logLevel, colors) => {
   if (Object.keys(results).length === 0) return;
   // Only show section headers for NORMAL and above
   if (logLevel > LOG_LEVELS.MINIMAL) {
@@ -177,7 +194,7 @@ function displayResults(type, results, logLevel, colors) {
   }
 }
 
-function displaySummary(nodeResults, browserResults, colors) {
+const displaySummary = (nodeResults, browserResults, colors) => {
   let totalTests = 0;
   let passedTests = 0;
   let failedTests = 0;
