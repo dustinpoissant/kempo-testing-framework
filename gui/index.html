@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kempo Testing Library</title>
+  <link rel="stylesheet" href="/essential.css" />
+</head>
+<body>
+<main>
+  <h1 class="ta-center">Kempo Testing Framework</h1>
+</main>
+<script type="module">
+  const testFiles = await(await fetch('/testFiles')).json();
+  async function getBrowserTestNames(file) {
+    try {
+      const moduleUrl = `/test/${file}`;
+      const testModule = await import(moduleUrl);
+      const testNames = testModule.default ? Object.keys(testModule.default) : [];
+      return testNames;
+    } catch (error) {
+      console.error(`Error importing test file ${file}:`, error);
+      return [];
+    }
+  }
+  for (const browserTest of testFiles.browserTests) {
+    browserTest.testNames = await getBrowserTestNames(browserTest.file);
+  }
+  console.log(testFiles);
+</script>
+</body>
+</html>

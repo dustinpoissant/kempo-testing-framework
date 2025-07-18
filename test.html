@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test</title>
+</head>
+<body>
+  <script type="module">
+    import runTests from './runTests.js';
+    const urlParams = new URLSearchParams(window.location.search);
+    const testFile = urlParams.get('testFile');
+    const testFilter = urlParams.get('testFilter');
+    if(!testFile){
+      throw new Error('No test file provided');
+    }
+    const testsModule = await import(`/${testFile}`);
+    const results = await runTests(testsModule, testFilter);
+    window.results = results;
+  </script>
+</body>
+</html>
