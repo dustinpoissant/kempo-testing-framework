@@ -42,7 +42,7 @@ Avoid unnecessary spacing, for example:
 let count = 1;
 
 const incrementOdd = (n) => {
-  if (n % 2 !== 0) {
+  if(n % 2 !== 0){
     return n++;
   }
   return n;
