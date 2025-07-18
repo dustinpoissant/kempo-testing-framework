@@ -7,7 +7,7 @@
 
 ### GUI
 
-All files served by the gui should be in the `gui/` directory, with the execption of scripts share with the cli, custom endpoints, and node_modules like essential.css (which should have custom endpoints).
+All files served by the GUI should be in the `gui/` directory, with the exception of scripts shared with the CLI, custom endpoints, and node_modules like essential.css (which should have custom endpoints).
 
 ## Coding Style Guidelines
 
@@ -16,29 +16,53 @@ Use multi-line comments to separate code into logical sections. Group related fu
   - Example: In Lit components, group lifecycle callbacks, event handlers, public methods, utility functions, and rendering logic separately.
 
 ### Avoid single-use variables/functions
-Avoid defining a variable or function to only use it once, inline the logic where needed. Some exceptions include:
-  - recusion
+Avoid defining a variable or function to only use it once; inline the logic where needed. Some exceptions include:
+  - recursion
   - scope encapsulation (IIFE)
   - context changes
 
-### Minimal Comments
+### Minimal Comments, Empty Lines, and Spacing
+
 Use minimal comments. Assume readers understand the language. Some exceptions include:
   - complex logic
-  - Anti-patterns
+  - anti-patterns
   - code organization
+
+Do not put random empty lines within code; put them where they make sense for readability, for example:
+  - above and below definitions for functions and classes.
+  - to help break up large sections of logic to be more readable. If there are 100 lines of code with no breaks, it gets hard to read.
+  - at the end of a file
+  - above multi-line comments to indicate the comment belongs to the code below
+
+Avoid unnecessary spacing, for example:
+  - after the word `if`
+  - within parentheses for conditional statements
+
+```javascript
+let count = 1;
+
+const incrementOdd = (n) => {
+  if (n % 2 !== 0) {
+    return n++;
+  }
+  return n;
+};
+
+count = incrementOdd(count);
+```
 
 ### Prefer Arrow Functions
 Prefer the use of arrow functions when possible, especially for class methods to avoid binding. Use normal functions if needed for preserving the proper context.
- - For very basic logic use implicit returns
-- If there is a single parameter, omit the parentheses.
+ - For very basic logic, use implicit returns
+ - If there is a single parameter, omit the parentheses.
 ```javascript
-const addOne = n => n+1
+const addOne = n => n + 1;
 ```
 
 ### Module Exports
-  - If a module has only one export, use the "defaut" export, not a named export.
-		- Do not declair the default export as a const or give it a name, just export the value.
-		
+  - If a module has only one export, use the "default" export, not a named export.
+    - Do not declare the default export as a const or give it a name; just export the value.
+
 ```javascript
 export default (n) => n + 1;
 ```
@@ -47,4 +71,4 @@ export default (n) => n + 1;
 ### Code Reuse
 Create utility functions for shared logic.
   - If the shared logic is used in a single file, define a utility function in that file.
-  - If the shared logic is used in multiple files, create a utility function module file in `src/utils/`
+  - If the shared logic is used in multiple files, create a utility function module file in `src/utils/`.
