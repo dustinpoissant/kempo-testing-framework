@@ -11,7 +11,8 @@ const shortFlagMap = {
     'v': 'verbose',
     'd': 'debug',
     'p': 'port',
-    'g': 'gui'
+    'g': 'gui',
+    'w': 'show-browser'
 };
 
 /*

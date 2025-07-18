@@ -268,10 +268,11 @@ Control the amount of console output during test execution:
 - Example: `npx kempo-test -b --port 8080`
 - Example: `npx kempo-test -p 3001`
 
-**`--show-browser`**
+**`--show-browser` or `-w`**
 - Show the browser window during browser tests (default: headless mode)
 - Useful for debugging browser tests and seeing what's happening
 - Example: `npx kempo-test -b --show-browser`
+- Example: `npx kempo-test -b -w`
 - Example: `npx kempo-test --show-browser --verbose`
 
 ### Combining Flags
