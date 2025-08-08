@@ -46,12 +46,13 @@ export default async ({
       });
     };
     log(`== Starting Test "${name}" ==`, 'progress', 3);
+    log('== Before Each ==', 'progress', 3);
     await beforeEach(log);
     await tests[name]({
       log,
       pass: message => {
         result.passed = true;
-        log(message, 'pass', 3);
+        log(message, 'pass', 2); // was 3; make visible at NORMAL
       },
       fail: message => {
         result.passed = false;
@@ -59,6 +60,7 @@ export default async ({
       }
     });
     await afterEach(log);
+    log('== After Each ==', 'progress', 3);
     if(!result.passed){ // If the test failed, elevate all logs to a level 2
       result.logs.forEach(log => log.level = 2);
     }

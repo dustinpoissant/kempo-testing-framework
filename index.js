@@ -6,10 +6,8 @@
 const shortFlagMap = {
     'b': 'browser',
     'n': 'node',
-    's': 'silent',
-    'q': 'quiet',
-    'v': 'verbose',
-    'd': 'debug',
+    'l': 'log-level',
+    'd': 'delay',
     'p': 'port',
     'g': 'gui',
     'w': 'show-browser'
@@ -22,27 +20,92 @@ const args = process.argv.slice(2);
 const flags = {};
 const remainingArgs = [];
 
+// Define which flags take values vs booleans
+const valueFlags = new Set(['log-level', 'delay', 'port']);
+const booleanFlags = new Set(['browser', 'node', 'gui', 'show-browser']);
+
 for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    let flagName = null;
-    
+
+    // Long flags: --flag or --flag=value
     if (arg.startsWith('--')) {
-        flagName = arg.slice(2);
-    } else if (arg.startsWith('-')) {
-        const shortFlag = arg.slice(1);
-        flagName = shortFlagMap[shortFlag] || shortFlag;
-    } else {
-        remainingArgs.push(arg);
+        const eqIdx = arg.indexOf('=');
+        let name = '';
+        let value = undefined;
+        if (eqIdx !== -1) {
+            name = arg.slice(2, eqIdx);
+            value = arg.slice(eqIdx + 1);
+        } else {
+            name = arg.slice(2);
+        }
+
+        // Normalize short form if someone passed unknown name
+        const flagName = shortFlagMap[name] || name;
+
+        if (valueFlags.has(flagName)) {
+            if (value !== undefined) {
+                flags[flagName] = value;
+            } else if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
+                flags[flagName] = args[i + 1];
+                i++; // consume the value
+            } else {
+                // No value provided; set true to allow downstream defaults
+                flags[flagName] = true;
+            }
+        } else {
+            // Boolean-style flag; never consume next token
+            flags[flagName] = true;
+        }
         continue;
     }
-    
-    // Check if the next argument exists and is not a flag
-    if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
-        flags[flagName] = args[i + 1];
-        i++; // Skip the next argument as it's used as a value
-    } else {
-        flags[flagName] = true;
+
+    // Short flags: -x (single). We don't support bundling like -bn
+    if (arg.startsWith('-') && arg.length > 1) {
+        const content = arg.slice(1);
+        const eqIdx = content.indexOf('=');
+        let short = content;
+        let attachedValue = undefined;
+        if (eqIdx !== -1) {
+            short = content.slice(0, eqIdx);
+            attachedValue = content.slice(eqIdx + 1);
+        }
+        const flagName = shortFlagMap[short] || short;
+
+        if (valueFlags.has(flagName)) {
+            if (attachedValue !== undefined) {
+                flags[flagName] = attachedValue;
+            } else if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
+                flags[flagName] = args[i + 1];
+                i++; // consume the value
+            } else {
+                flags[flagName] = true; // allow downstream defaults
+            }
+        } else {
+            // Boolean-style flag; never consume next token; ignore any attached value
+            flags[flagName] = true;
+        }
+        continue;
     }
+
+    // Positional arg (suite/test filters)
+    remainingArgs.push(arg);
+}
+
+// Normalize --log-level/-l to numeric flags.logLevel (0-4)
+if (Object.prototype.hasOwnProperty.call(flags, 'log-level')) {
+    const raw = String(flags['log-level']).toLowerCase();
+    const map = {
+        '0': 0, '1': 1, '2': 2, '3': 3, '4': 4,
+        'silent': 0, 's': 0,
+        'minimal': 1, 'm': 1,
+        'normal': 2, 'n': 2,
+        'verbose': 3, 'v': 3,
+        'debug': 4, 'd': 4,
+    };
+    const val = Object.prototype.hasOwnProperty.call(map, raw) ? map[raw] : Number(raw);
+    const level = Number.isFinite(val) && val >= 0 && val <= 4 ? val : 2;
+    flags.logLevel = level;
+    delete flags['log-level'];
 }
 
 /*
@@ -52,6 +115,8 @@ if (flags.gui) {
     const { default: gui } = await import('./src/gui.js');
     await gui(flags, remainingArgs);
 } else {
+    // Log flags to verify capture
+    console.log('kempo-test flags:', flags);
     const { default: cli } = await import('./src/cli.js');
     await cli(flags, remainingArgs);
 }

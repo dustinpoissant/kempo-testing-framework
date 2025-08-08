@@ -74,7 +74,7 @@ npm run tests:browser   # Run only browser tests
 npm run tests:node      # Run only node tests
 ```
 
-**Important:** npm scripts with npx don't reliably pass additional arguments. If you need to use flags like `--show-browser`, `--verbose`, or filters, use `npx kempo-test` directly instead of npm scripts.
+**Important:** npm scripts with npx don't reliably pass additional arguments. If you need to use flags like `--show-browser`, `--log-level`, or filters, use `npx kempo-test` directly instead of npm scripts.
 
 ## Test File Naming
 
@@ -224,6 +224,8 @@ export default {
 
 When running tests via the CLI, you can use various flags to control test execution and output. These flags only affect CLI execution and are ignored when using the GUI (`--gui` flag).
 
+Note: For flags that take values, you can use either a space or equals: `--log-level verbose` or `--log-level=verbose`. Short flags also support equals for value flags: `-l verbose` or `-l=verbose`. Examples below use spaces for clarity.
+
 ### Environment Flags
 
 **`-b` or `--browser`**
@@ -236,29 +238,16 @@ When running tests via the CLI, you can use various flags to control test execut
 - Example: `npx kempo-test -n`
 - Example with filter: `npx kempo-test -n user`
 
-### Log Level Flags
+### Log Level Flag
 
-Control the amount of console output during test execution:
+Set the verbosity of output:
 
-**`--silent` or `-s`**
-- No output except final summary
-- Example: `npx kempo-test --silent`
-
-**`--quiet` or `-q`**
-- Only test names and pass/fail status
-- Example: `npx kempo-test --quiet`
-
-**Default (no flag)**
-- Test names, status, and logs from failed tests
-- This is the standard output level
-
-**`--verbose` or `-v`**
-- All test output including logs from passing tests
-- Example: `npx kempo-test --verbose`
-
-**`--debug` or `-d`**
-- Everything including framework internals
-- Example: `npx kempo-test --debug`
+**`-l` or `--log-level`**
+- Accepts numeric 0–4 or names: `silent|minimal|normal|verbose|debug` (also `s|m|n|v|d`)
+- Examples:
+  - `npx kempo-test -l debug`
+  - `npx kempo-test --log-level 3`
+  - `npx kempo-test -l n`
 
 ### Server Configuration Flags
 
@@ -273,24 +262,27 @@ Control the amount of console output during test execution:
 - Useful for debugging browser tests and seeing what's happening
 - Example: `npx kempo-test -b --show-browser`
 - Example: `npx kempo-test -b -w`
-- Example: `npx kempo-test --show-browser --verbose`
+
+**`--delay` or `-d`**
+- Specify a browser pause delay in milliseconds (applies before and after browser tests when the browser window is shown)
+- Example: `npx kempo-test -b --show-browser --delay 2000`
 
 ### Combining Flags
 
 You can combine multiple flags for precise control:
 
 ```bash
-# Run only browser tests with verbose output for auth-related files
-npx kempo-test -b --verbose auth
+# Run only browser tests with verbose-like output using log level
+npx kempo-test -b -l verbose auth
 
-# Run only node tests with quiet output for user-related files  
-npx kempo-test -n --quiet user
+# Run only node tests with minimal output
+npx kempo-test -n -l minimal user
 
 # Run all tests silently with a specific filter
-npx kempo-test --silent payment
+npx kempo-test -l silent payment
 
-# Run browser tests with visible browser window and custom port
-npx kempo-test -b --show-browser --port 8080
+# Run browser tests with visible browser window, custom port and delay
+npx kempo-test -b --show-browser --port 8080 --delay 2000
 ```
 
 ### Help

@@ -26,6 +26,19 @@ export const startServer = async (_port = 3000) => {
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         const filePath = path.join(__dirname, 'runTests.js');
         res.end(await readFile(filePath, 'utf8'));
+      }
+      // Serve essential.css like the GUI server does
+      else if (basePath === '/essential.css') {
+        try {
+          const cssPath = path.join(__dirname, '../node_modules/essentialcss/dist/essential.min.css');
+          const css = await readFile(cssPath, 'utf8');
+          res.writeHead(200, { 'Content-Type': 'text/css' });
+          res.end(css);
+        } catch (error) {
+          console.error(`Error serving essential.css:`, error);
+          res.writeHead(404);
+          res.end('Not found');
+        }
       } else if(['/favicon.ico', '/.well-known/appspecific/com.chrome.devtools.json'].includes(basePath)){
         res.writeHead(404);
         res.end('');
@@ -34,8 +47,9 @@ export const startServer = async (_port = 3000) => {
          * Static File Serving
          */
         try {
-          const filePath = `.${basePath}`;
-          const fileContent = await readFile(filePath);
+          // First try from project root, e.g. /gui/components/* works already
+          const primaryPath = `.${basePath}`;
+          let fileContent = await readFile(primaryPath);
           const extension = basePath.split('.').pop().toLowerCase();
           let contentType = 'text/plain';
           switch(extension){
@@ -50,10 +64,31 @@ export const startServer = async (_port = 3000) => {
           }
           res.writeHead(200, { 'Content-Type': contentType });
           res.end(fileContent);
-        } catch (error) {
-          console.error(`Error serving ${basePath}:`, error);
-          res.writeHead(404);
-          res.end('Not found');
+        } catch (primaryErr) {
+          // If not found, try resolving under gui/ for assets like /icons/*
+          try {
+            const rel = basePath.replace(/^\//, '');
+            const fallbackPath = path.join(__dirname, '..', 'gui', rel);
+            const fileContent = await readFile(fallbackPath);
+            const extension = basePath.split('.').pop().toLowerCase();
+            let contentType = 'text/plain';
+            switch(extension){
+              case 'html': contentType = 'text/html'; break;
+              case 'css': contentType = 'text/css'; break;
+              case 'js': contentType = 'application/javascript'; break;
+              case 'json': contentType = 'application/json'; break;
+              case 'png': contentType = 'image/png'; break;
+              case 'jpg': case 'jpeg': contentType = 'image/jpeg'; break;
+              case 'gif': contentType = 'image/gif'; break;
+              case 'svg': contentType = 'image/svg+xml'; break;
+            }
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(fileContent);
+          } catch (fallbackErr) {
+            console.error(`Error serving ${basePath}:`, fallbackErr);
+            res.writeHead(404);
+            res.end('Not found');
+          }
         }
       }
     });

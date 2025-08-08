@@ -39,6 +39,8 @@ Do not put random empty lines within code; put them where they make sense for re
   - to help break up large sections of logic to be more readable. If there are 100 lines of code with no breaks, it gets hard to read.
   - above multi-line comments to indicate the comment belongs to the code below
 
+No  empty lines in css.
+
 End each file with an empty line.
 
 End each line with a `;` when possible, even if it is optional.
@@ -81,3 +83,5 @@ export default (n) => n + 1;
 Create utility functions for shared logic.
   - If the shared logic is used in a single file, define a utility function in that file.
   - If the shared logic is used in multiple files, create a utility function module file in `src/utils/`.
+
+## Lit Components

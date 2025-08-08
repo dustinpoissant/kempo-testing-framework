@@ -3,30 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kempo Testing Library</title>
+  <title>Kempo Testing Library GUI</title>
   <link rel="stylesheet" href="/essential.css" />
 </head>
 <body>
 <main>
-  <h1 class="ta-center">Kempo Testing Framework</h1>
+  <h1 class="ta-center">Kempo Testing Framework GUI</h1>
+
+  <ktf-collapsible id="settings">
+    <span slot="title"><ktf-icon name="settings"></ktf-icon> &nbsp; <b>Settings</b></span>
+
+      <ktf-setting-checkbox name="showBrowser" label="Show Browser"></ktf-setting-checkbox>
+
+      <ktf-setting-select name="logLevel" label="Log Level"></ktf-setting-select>
+
+      <ktf-setting-select name="theme" label="Theme"></ktf-setting-select>
+  </ktf-collapsible>
+
+  <div id="nodeTestsContainer">
+    <h2>Node Tests</h2>
+    <div id="nodeTests"></div>
+  </div>
+  <div id="browserTestsContainer">
+    <h2>Browser Tests</h2>
+    <div id="browserTests"></div>
+  </div>
 </main>
 <script type="module">
+  import '/components/TestFile.js';
+  import '/components/Icon.js';
+  import '/components/Theme.js';
+  import '/components/Collapsible.js';
+  import '/components/SettingSelect.js';
+  import '/components/SettingCheckbox.js';
+  import { getSettings, setSettings, subscribe } from '/components/settingsStore.js';
+  
+  // Apply theme to document on load and when settings change
+  const applyTheme = (s) => {
+    const theme = s.theme || 'auto';
+    document.documentElement.setAttribute('theme', theme);
+  };
+  applyTheme(getSettings());
+  subscribe(applyTheme);
+  
+  // Settings UI init
+  const els = { };
+  const applyToControls = () => {};
+  applyToControls(getSettings());
+  subscribe(applyToControls);
+
   const testFiles = await(await fetch('/testFiles')).json();
-  async function getBrowserTestNames(file) {
+  for (const browserTest of testFiles.browserTests) {
     try {
-      const moduleUrl = `/test/${file}`;
+      const moduleUrl = `/test/${browserTest.file}`;
       const testModule = await import(moduleUrl);
-      const testNames = testModule.default ? Object.keys(testModule.default) : [];
-      return testNames;
+      browserTest.testNames = testModule.default ? Object.keys(testModule.default) : [];
     } catch (error) {
-      console.error(`Error importing test file ${file}:`, error);
-      return [];
+      console.error(`Error importing test file ${browserTest.file}:`, error);
+      browserTest.testNames = [];
     }
   }
-  for (const browserTest of testFiles.browserTests) {
-    browserTest.testNames = await getBrowserTestNames(browserTest.file);
+  if(!testFiles?.browserTests?.length){
+    document.getElementById('browserTestsContainer').style.display = 'none';
+  } else {
+    const browserTestsContainer = document.getElementById('browserTests');
+    testFiles.browserTests.forEach(browserTest => {
+      const testFileElement = document.createElement('ktf-test-file');
+      testFileElement.file = browserTest.file;
+      testFileElement.testNames = browserTest.testNames;
+      browserTestsContainer.appendChild(testFileElement);
+    });
   }
-  console.log(testFiles);
+  if(!testFiles?.nodeTests?.length){
+    document.getElementById('nodeTestsContainer').style.display = 'none';
+  } else {
+    const nodeTestsContainer = document.getElementById('nodeTests');
+    testFiles.nodeTests.forEach(nodeTest => {
+      const testFileElement = document.createElement('ktf-test-file');
+      testFileElement.file = nodeTest.file;
+      testFileElement.testNames = nodeTest.testNames || [];
+      nodeTestsContainer.appendChild(testFileElement);
+    });
+  }
 </script>
 </body>
 </html>

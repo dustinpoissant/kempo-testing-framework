@@ -7,7 +7,8 @@ export default async ({
   filter = false,
   showBrowser = false,
   port = 3000,
-  logLevel
+  logLevel,
+  delayMs = 0
 }) => {
   /*
    * Start Test Server
@@ -18,20 +19,43 @@ export default async ({
     console.log(`\x1b[90m Browser test server started at ${url}\x1b[0m`);
   }
   
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   try {
     /*
      * Launch Browser and Execute Tests
      */
-    const browser = await puppeteer.launch({ 
+    const launchOptions = {
       headless: !showBrowser,
-      devtools: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--auto-open-devtools-for-tabs'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
       defaultViewport: { width: 1600, height: 900 }
-    });
+    };
+    if (showBrowser) {
+      launchOptions.devtools = true;
+      launchOptions.args.push('--auto-open-devtools-for-tabs');
+    }
+
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
-    await page.goto(`${url}?testFile=${testFile}&filter=${filter}`);
+
+    // Optional pre-delay when a visible browser is requested
+    if (showBrowser && delayMs > 0) {
+      if (logLevel >= LOG_LEVELS.VERBOSE) {
+        console.log(`\x1b[90m Applying pre-test browser delay: ${delayMs}ms\x1b[0m`);
+      }
+      await sleep(delayMs);
+    }
+
+    await page.goto(`${url}?testFile=${testFile}&testFilter=${filter}&delay=${delayMs}`);
     await page.waitForFunction(() => window.results !== undefined);
     const results = await page.evaluate(() => window.results);
+
+    // Optional post-delay when a visible browser is requested
+    if (showBrowser && delayMs > 0) {
+      if (logLevel >= LOG_LEVELS.VERBOSE) {
+        console.log(`\x1b[90m Applying post-test browser delay: ${delayMs}ms\x1b[0m`);
+      }
+      await sleep(delayMs);
+    }
     
     /*
      * Cleanup

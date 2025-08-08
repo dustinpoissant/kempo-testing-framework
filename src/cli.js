@@ -1,7 +1,4 @@
-import findTests from './findTests.js';
-import runTests from './runTests.js';
-import runBrowserTests from './runBrowserTests.js';
-import path from 'path';
+import runTestFiles from './runTestFiles.js';
 import LOG_LEVELS from './utils/logLevels.js';
 
 export default async (flags, args) => {
@@ -11,14 +8,9 @@ export default async (flags, args) => {
    * Log Level Configuration
    */
   let logLevel = LOG_LEVELS.NORMAL;
-  if(flags.silent){
-    logLevel = LOG_LEVELS.SILENT;
-  } else if(flags.quiet){
-    logLevel = LOG_LEVELS.MINIMAL;
-  } else if(flags.verbose){
-    logLevel = LOG_LEVELS.VERBOSE;
-  } else if(flags.debug){
-    logLevel = LOG_LEVELS.DEBUG;
+  if (typeof flags.logLevel === 'number' && Number.isFinite(flags.logLevel)) {
+    const lvl = Math.max(0, Math.min(4, flags.logLevel));
+    logLevel = lvl;
   }
   
   if(logLevel >= LOG_LEVELS.DEBUG){
@@ -35,12 +27,10 @@ export default async (flags, args) => {
   const runNode = Boolean(flags.node);
   const shouldRunBrowser = runBrowser || (!runBrowser && !runNode);
   const shouldRunNode = runNode || (!runBrowser && !runNode);
-  
-  const {
-    nodeTests,
-    browserTests
-  } = await findTests(suiteFilter, testFilter, shouldRunBrowser, shouldRunNode);
-  
+  const port = flags.port ? parseInt(flags.port, 10) : 3000;
+  // Parse delay (milliseconds). Non-numeric or missing => 0
+  const delayMs = Number.isFinite(parseInt(flags.delay, 10)) ? Math.max(0, parseInt(flags.delay, 10)) : 0;
+
   /*
    * Color Configuration
    */
@@ -54,42 +44,26 @@ export default async (flags, args) => {
     gray: '\x1b[90m',
     blue: '\x1b[34m'
   };
-  
-  /*
-   * Node Test Execution
-   */
-  const nodeResults = {};
-  if(nodeTests.length){
-    for(const file of nodeTests){
-      if(logLevel > LOG_LEVELS.MINIMAL){
-        console.log(`${colors.cyan}Running Node test: ${file}${colors.reset}`);
-      }
-      // Convert forward slashes back to OS-specific path separators for file system operations
-      const normalizedFile = file.replace(/\//g, path.sep);
-      const module = await import(`file://${path.resolve(process.cwd(), normalizedFile)}`);
-      nodeResults[file] = await runTests(module, testFilter);
-    }
-  }
 
   /*
-   * Browser Test Execution
+   * Test Execution
    */
-  const port = flags.port ? parseInt(flags.port, 10) : 3000;
-  const browserResults = {};
-  if(browserTests.length){
-    for(const testFile of browserTests){
-      if(logLevel > LOG_LEVELS.MINIMAL){
-        console.log(`${colors.magenta}Running Browser test: ${testFile}${colors.reset}`);
-      }
-      browserResults[testFile] = await runBrowserTests({
-        testFile,
-        testFilter,
-        showBrowser,
-        port,
-        logLevel
-      });
-    }
-  }
+  const { nodeResults, browserResults } = await runTestFiles({
+    suiteFilter,
+    testFilter,
+    shouldRunBrowser,
+    shouldRunNode,
+    showBrowser,
+    port,
+    logLevel,
+    delayMs,
+    onNodeTestStart: logLevel > LOG_LEVELS.MINIMAL ? (file) => {
+      console.log(`${colors.cyan}Running Node test: ${file}${colors.reset}`);
+    } : undefined,
+    onBrowserTestStart: logLevel > LOG_LEVELS.MINIMAL ? (file) => {
+      console.log(`${colors.magenta}Running Browser test: ${file}${colors.reset}`);
+    } : undefined
+  });
   
   /*
    * Results Display

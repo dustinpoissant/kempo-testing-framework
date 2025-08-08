@@ -11,11 +11,12 @@
     const urlParams = new URLSearchParams(window.location.search);
     const testFile = urlParams.get('testFile');
     const testFilter = urlParams.get('testFilter');
+    const delay = parseInt(urlParams.get('delay') || '0', 10) || 0;
     if(!testFile){
       throw new Error('No test file provided');
     }
     const testsModule = await import(`/${testFile}`);
-    const results = await runTests(testsModule, testFilter);
+    const results = await runTests(testsModule, testFilter, delay);
     window.results = results;
   </script>
 </body>
