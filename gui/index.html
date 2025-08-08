@@ -14,10 +14,14 @@
     <span slot="title"><ktf-icon name="settings"></ktf-icon> &nbsp; <b>Settings</b></span>
 
       <ktf-setting-checkbox name="showBrowser" label="Show Browser"></ktf-setting-checkbox>
+      <div id="delaySettingRow">
+        <ktf-setting-number name="delayMs" label="Delay (ms) between tests and around browser runs" step="100" min="0" max="600000" suffix="ms"></ktf-setting-number>
+      </div>
 
       <ktf-setting-select name="logLevel" label="Log Level"></ktf-setting-select>
 
       <ktf-setting-select name="theme" label="Theme"></ktf-setting-select>
+      
   </ktf-collapsible>
 
   <div id="nodeTestsContainer">
@@ -36,6 +40,7 @@
   import '/components/Collapsible.js';
   import '/components/SettingSelect.js';
   import '/components/SettingCheckbox.js';
+  import '/components/SettingNumber.js';
   import { getSettings, setSettings, subscribe } from '/components/settingsStore.js';
   
   // Apply theme to document on load and when settings change
@@ -46,7 +51,15 @@
   applyTheme(getSettings());
   subscribe(applyTheme);
   
-  // Settings UI init
+  // Toggle delay setting visibility with showBrowser
+  const syncDelayVisibility = (s) => {
+    const row = document.getElementById('delaySettingRow');
+    if (row) row.style.display = s.showBrowser ? '' : 'none';
+  };
+  syncDelayVisibility(getSettings());
+  subscribe(syncDelayVisibility);
+  
+  // Settings UI init (reserved for future)
   const els = { };
   const applyToControls = () => {};
   applyToControls(getSettings());

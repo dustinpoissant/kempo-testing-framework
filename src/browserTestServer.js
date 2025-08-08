@@ -61,14 +61,22 @@ export const startServer = async (_port = 3000) => {
             case 'jpg': case 'jpeg': contentType = 'image/jpeg'; break;
             case 'gif': contentType = 'image/gif'; break;
             case 'svg': contentType = 'image/svg+xml'; break;
+            case 'map': contentType = 'application/json'; break;
           }
           res.writeHead(200, { 'Content-Type': contentType });
           res.end(fileContent);
         } catch (primaryErr) {
+          // If requesting a sourcemap, quietly 404 without noisy logs
+          if (basePath.endsWith('.map')) {
+            res.writeHead(404);
+            res.end('Not found');
+            return;
+          }
           // If not found, try resolving under gui/ for assets like /icons/*
           try {
             const rel = basePath.replace(/^\//, '');
-            const fallbackPath = path.join(__dirname, '..', 'gui', rel);
+            const relUnderGui = rel.startsWith('gui/') ? rel : path.join('gui', rel);
+            const fallbackPath = path.join(__dirname, '..', relUnderGui);
             const fileContent = await readFile(fallbackPath);
             const extension = basePath.split('.').pop().toLowerCase();
             let contentType = 'text/plain';
@@ -81,11 +89,11 @@ export const startServer = async (_port = 3000) => {
               case 'jpg': case 'jpeg': contentType = 'image/jpeg'; break;
               case 'gif': contentType = 'image/gif'; break;
               case 'svg': contentType = 'image/svg+xml'; break;
+              case 'map': contentType = 'application/json'; break;
             }
             res.writeHead(200, { 'Content-Type': contentType });
             res.end(fileContent);
           } catch (fallbackErr) {
-            console.error(`Error serving ${basePath}:`, fallbackErr);
             res.writeHead(404);
             res.end('Not found');
           }

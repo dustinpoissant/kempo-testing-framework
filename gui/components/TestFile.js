@@ -61,8 +61,8 @@ window.customElements.define('ktf-test-file', class extends LitElement {
 		if (fileLogsEl) fileLogsEl.clear();
 
 		try {
-			const { showBrowser } = getSettings();
-			const resp = await fetch(`/runTest?testFile=${encodeURIComponent(this.file)}&showBrowser=${!!showBrowser}`);
+			const { showBrowser, delayMs } = getSettings();
+			const resp = await fetch(`/runTest?testFile=${encodeURIComponent(this.file)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`);
 			let data = null;
 			try { data = await resp.json(); } catch { /* ignore */ }
 

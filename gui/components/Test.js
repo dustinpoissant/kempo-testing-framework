@@ -43,8 +43,8 @@ window.customElements.define('ktf-test', class extends LitElement {
 		const logsEl = this.renderRoot?.getElementById('logs');
 		if (logsEl) logsEl.clear();
 		try {
-			const { showBrowser } = getSettings();
-			const resp = await fetch(`/runTest?testFile=${encodeURIComponent(this.file)}&testNames=${encodeURIComponent(this.name)}&showBrowser=${!!showBrowser}`);
+			const { showBrowser, delayMs } = getSettings();
+			const resp = await fetch(`/runTest?testFile=${encodeURIComponent(this.file)}&testNames=${encodeURIComponent(this.name)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`);
 			let data = null;
 			try { data = await resp.json(); } catch { /* ignore */ }
 			console.log(data);

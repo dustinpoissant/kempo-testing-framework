@@ -105,6 +105,7 @@ export default async (flags, args) => {
       const testNames = testNamesParam ? testNamesParam.split(',') : [];
       const showBrowserParam = url.searchParams.get('showBrowser');
       const showBrowser = showBrowserParam === 'true';
+     const delayMs = Math.max(0, parseInt(url.searchParams.get('delayMs')||'0', 10) || 0);
 
       try {
         // Determine if this is a browser or node test based on file extension
@@ -125,6 +126,7 @@ export default async (flags, args) => {
           showBrowser, // pass through from query
           port: 3001,
           logLevel: 2,
+          delayMs,
           specificFiles: [testFile]
         });
 

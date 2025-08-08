@@ -4,6 +4,7 @@ const DEFAULTS = {
   showBrowser: false,
   logLevel: 3,
   theme: 'auto',
+  delayMs: 0,
 };
 
 let state = (() => {
