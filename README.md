@@ -26,9 +26,9 @@ Install `kempo-testing-framework` as a dependency in your project:
 npm install kempo-testing-framework --save-dev
 ```
 
-## Test Types
+## Test Types and File Naming
 
-Kempo supports two types of tests that can coexist in the same test suite:
+Kempo supports three types of tests that can coexist in the same test suite:
 
 ### Browser Tests
 Tests that run directly in the browser environment. Best for:
@@ -37,6 +37,8 @@ Tests that run directly in the browser environment. Best for:
 - UI components
 - Client-side functionality
 
+Use the naming convention: `[name].browser-test.js`
+
 ### Node Tests  
 Tests that run on the server via API calls. Best for:
 - Server-side logic
@@ -44,15 +46,15 @@ Tests that run on the server via API calls. Best for:
 - Node-specific APIs
 - Pure JavaScript functions
 
-Each type of test (browser / node) should have its own test file, but both will run 
+Use the naming convention: `[name].node-test.js`
 
-## Test File Naming
+### Shared Tests
+Tests that run in both Node and browser environments. Best for:
+- Pure JavaScript functions
+- Cross-platform functionality
+- Code intended to work in both environments
 
-Kempo supports three types of test files:
-
-- `[name].browser-test.js` — runs only in the browser
-- `[name].node-test.js` — runs only in Node
-- `[name].test.js` — runs in both environments
+Use the naming convention: `[name].test.js`
 
 If your code is intended to run in both Node and the browser, you should write a single test file named `[name].test.js.`, otherwise use the environment specific file names `[name].browser-test.js` and/or `[name]node-test.js`.
 
