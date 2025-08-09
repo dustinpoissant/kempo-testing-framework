@@ -84,7 +84,7 @@ Kempo supports three types of test files:
 - `[name].node-test.js` — runs only in Node
 - `[name].test.js` — runs in both environments
 
-If your code can run in both Node and the browser, you can write a single test file named `[name].test.js.` otherwise use the environment specific file names `[name].browser-test.js` and/or `[name]node-test.js`.
+If your code is intended to run in both Node and the browser, you should write a single test file named `[name].test.js.`, otherwise use the environment specific file names `[name].browser-test.js` and/or `[name]node-test.js`.
 
 ## Running Specific or Filtered Tests
 
