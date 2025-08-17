@@ -26,118 +26,6 @@ Install `kempo-testing-framework` as a dependency in your project:
 npm install kempo-testing-framework --save-dev
 ```
 
-## Running Tests
-
-### CLI (Command-Line Interface)
-Run all tests using npx:
-```bash
-npx kempo-test
-```
-
-Run only the browser tests:
-```bash
-npx kempo-test -b
-```
-
-Run only the node tests:
-```bash
-npx kempo-test -n
-```
-
-### GUI (webpage)
-
-Run the GUI interface:
-```bash
-npx kempo-test --gui
-```
-
-### Using npm Scripts (Optional)
-
-You can add npm scripts to your `package.json` for convenience:
-
-```json
-{
-  "scripts": {
-    "tests": "npx kempo-test",
-    "tests:gui": "npx kempo-test --gui",
-    "tests:browser": "npx kempo-test -b",
-    "tests:node": "npx kempo-test -n"
-  }
-}
-```
-
-Then run with:
-```bash
-npm run tests           # Run all tests
-npm run tests:gui       # Start GUI
-npm run tests:browser   # Run only browser tests
-npm run tests:node      # Run only node tests
-```
-
-**Important:** npm scripts with npx don't reliably pass additional arguments. If you need to use flags like `--show-browser`, `--log-level`, or filters, use `npx kempo-test` directly instead of npm scripts.
-
-## Test File Naming
-
-Kempo supports three types of test files:
-
-- `[name].browser-test.js` — runs only in the browser
-- `[name].node-test.js` — runs only in Node
-- `[name].test.js` — runs in both environments
-
-If your code can run in both Node and the browser, you can write a single test file named `[name].test.js.` otherwise use the environment specific file names `[name].browser-test.js` and/or `[name]node-test.js`.
-
-## Running Specific or Filtered Tests
-
-Kempo supports two levels of filtering to help you run only the tests you need:
-
-### File-Level Filtering
-
-You can filter which test files to run by providing a partial filename (substring) as an argument. All test files whose names include the substring will be run. This works for both full and partial names, and matches anywhere in the filename (not just the start).
-
-For example, if you have test files named `auth.browser-test.js`, `auth.node-test.js`, `user-auth.test.js`, and `payment.test.js`:
-
-Run all tests with `auth` in the name (in both environments):
-```bash
-npx kempo-test auth
-```
-
-Run only the browser tests with `auth` in the name:
-```bash
-npx kempo-test -b auth
-```
-
-Run only the node tests with `auth` in the name:
-```bash
-npx kempo-test -n auth
-```
-
-### Individual Test Filtering
-
-You can also filter individual tests within files by providing a second argument. This will find files matching the first filter, then within those files, run only tests whose names (object keys) contain the second filter.
-
-Using the same example files, if your `auth.browser-test.js` contains tests like:
-```javascript
-export default {
-  'should handle user login validation': async ({pass, fail, log}) => { /* ... */ },
-  'should handle user logout process': async ({pass, fail, log}) => { /* ... */ },
-  'should validate password requirements': async ({pass, fail, log}) => { /* ... */ }
-};
-```
-
-Run only tests containing "login" in files containing "auth":
-```bash
-npx kempo-test auth login
-```
-
-Run only browser tests containing "logout" in files containing "auth":
-```bash
-npx kempo-test -b auth logout
-```
-
-Both file and test filtering are case-insensitive and use substring matching.
-
-If you do not provide any filters, all test files will be auto-discovered and run.
-
 ## Test Types
 
 Kempo supports two types of tests that can coexist in the same test suite:
@@ -157,6 +45,16 @@ Tests that run on the server via API calls. Best for:
 - Pure JavaScript functions
 
 Each type of test (browser / node) should have its own test file, but both will run 
+
+## Test File Naming
+
+Kempo supports three types of test files:
+
+- `[name].browser-test.js` — runs only in the browser
+- `[name].node-test.js` — runs only in Node
+- `[name].test.js` — runs in both environments
+
+If your code is intended to run in both Node and the browser, you should write a single test file named `[name].test.js.`, otherwise use the environment specific file names `[name].browser-test.js` and/or `[name]node-test.js`.
 
 ## Writing Tests
 
@@ -219,6 +117,56 @@ export default {
 };
 ```
 
+
+## Running Tests
+
+### CLI (Command-Line Interface)
+Run all tests using npx:
+```bash
+npx kempo-test
+```
+
+Run only the browser tests:
+```bash
+npx kempo-test -b
+```
+
+Run only the node tests:
+```bash
+npx kempo-test -n
+```
+
+### GUI (webpage)
+
+Run the GUI interface:
+```bash
+npx kempo-test --gui
+```
+
+### Using npm Scripts (Optional)
+
+You can add npm scripts to your `package.json` for convenience:
+
+```json
+{
+  "scripts": {
+    "tests": "npx kempo-test",
+    "tests:gui": "npx kempo-test --gui",
+    "tests:browser": "npx kempo-test -b",
+    "tests:node": "npx kempo-test -n"
+  }
+}
+```
+
+Then run with:
+```bash
+npm run tests           # Run all tests
+npm run tests:gui       # Start GUI
+npm run tests:browser   # Run only browser tests
+npm run tests:node      # Run only node tests
+```
+
+**Important:** npm scripts with npx don't reliably pass additional arguments. If you need to use flags like `--show-browser`, `--log-level`, or filters, use `npx kempo-test` directly instead of npm scripts.
 
 ## CLI Flags Reference
 
@@ -285,10 +233,61 @@ npx kempo-test -l silent payment
 npx kempo-test -b --show-browser --port 8080 --delay 2000
 ```
 
+## Running Specific or Filtered Tests
+
+Kempo supports two levels of filtering to help you run only the tests you need:
+
+### File-Level Filtering
+
+You can filter which test files to run by providing a partial filename (substring) as an argument. All test files whose names include the substring will be run. This works for both full and partial names, and matches anywhere in the filename (not just the start).
+
+For example, if you have test files named `auth.browser-test.js`, `auth.node-test.js`, `user-auth.test.js`, and `payment.test.js`:
+
+Run all tests with `auth` in the name (in both environments):
+```bash
+npx kempo-test auth
+```
+
+Run only the browser tests with `auth` in the name:
+```bash
+npx kempo-test -b auth
+```
+
+Run only the node tests with `auth` in the name:
+```bash
+npx kempo-test -n auth
+```
+
+### Individual Test Filtering
+
+You can also filter individual tests within files by providing a second argument. This will find files matching the first filter, then within those files, run only tests whose names (object keys) contain the second filter.
+
+Using the same example files, if your `auth.browser-test.js` contains tests like:
+```javascript
+export default {
+  'should handle user login validation': async ({pass, fail, log}) => { /* ... */ },
+  'should handle user logout process': async ({pass, fail, log}) => { /* ... */ },
+  'should validate password requirements': async ({pass, fail, log}) => { /* ... */ }
+};
+```
+
+Run only tests containing "login" in files containing "auth":
+```bash
+npx kempo-test auth login
+```
+
+Run only browser tests containing "logout" in files containing "auth":
+```bash
+npx kempo-test -b auth logout
+```
+
+Both file and test filtering are case-insensitive and use substring matching.
+
+If you do not provide any filters, all test files will be auto-discovered and run.
+
 ### Help
 
 Get usage instructions and see all available options:
 ```bash
 npx kempo-test --help
 ```
-
