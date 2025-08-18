@@ -109,8 +109,8 @@ export default async (flags, args) => {
 
       try {
         // Determine if this is a browser or node test based on file extension
-        const isBrowserTest = testFile.endsWith('.browser-test.js');
-        const isNodeTest = testFile.endsWith('.node-test.js');
+        const isBrowserTest = testFile.endsWith('.browser-test.js') || testFile.endsWith('.test.js');
+        const isNodeTest = testFile.endsWith('.node-test.js') || testFile.endsWith('.test.js');
         
         if (!isBrowserTest && !isNodeTest) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
