@@ -1,6 +1,6 @@
 {
   "name": "kempo-testing-framework",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The Kempo Testing Framework is a simple testing framework built on the principle that code intended to be ran in the browser should be tested in the browser, code intended to be ran in Node should be tested in Node, and code intended to be ran in both should be tested in both. No mocking, no complexity—just testing.",
   "main": "index.js",
   "bin": {
