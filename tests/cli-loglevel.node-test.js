@@ -23,18 +23,18 @@ export default {
     const out = await run(['-l', 'debug', 'example']);
     const txt = stripAnsi(out);
     const ok = txt.includes('[Debug] Flags:') && txt.includes('[Debug] Args:') && txt.includes('[Debug] Log level: 4');
-    ok ? pass('ok') : fail(out);
+  ok ? pass('CLI debug level printed expected debug preamble') : fail(`CLI output missing debug preamble:\n${out}`);
   },
   'minimal level omits beforeAll sections': async ({ pass, fail }) => {
     const out = await run(['-l', 'minimal', 'example']);
     const txt = stripAnsi(out);
     const ok = !/beforeAll/.test(txt);
-    ok ? pass('ok') : fail(out);
+  ok ? pass('Minimal log level omitted beforeAll sections') : fail(`Output contained beforeAll unexpectedly:\n${out}`);
   },
   'verbose shows pass lines for passing tests': async ({ pass, fail }) => {
     const out = await run(['-l', 'verbose', 'example']);
     const txt = stripAnsi(out);
     const ok = /PASS\s+should handle basic string operations/.test(txt);
-    ok ? pass('ok') : fail(out);
+  ok ? pass('Verbose level printed PASS lines for passing tests') : fail(`Verbose output missing PASS lines:\n${out}`);
   }
 };

@@ -23,8 +23,8 @@ export default {
       document.body.appendChild(tf);
       await nextTick(); await nextTick();
 
-      const hasPlay = !!tf.shadowRoot.querySelector('div[slot="actions"] ktf-icon[name="play"]');
-      if (hasPlay) pass('ok'); else fail('missing play icon');
+    const hasPlay = !!tf.shadowRoot.querySelector('div[slot="actions"] ktf-icon[name="play"]');
+    if (hasPlay) pass('TestSuite renders children and shows initial play icon'); else fail('Missing play icon on TestSuite');
     } catch (e) { fail(e.stack || String(e)); }
   },
 
@@ -54,7 +54,7 @@ export default {
       children[1].status = 'pass';
       await nextTick();
       const statusPass = tf.getAttribute('status') === 'pass' || tf.status === 'pass';
-      if (statusRunning && statusFail && statusPass) pass('ok'); else fail('status propagation failed');
+  if (statusRunning && statusFail && statusPass) pass('TestSuite aggregated status from children correctly'); else fail('Status propagation failed on TestSuite');
     } catch (e) { fail(e.stack || String(e)); }
   }
 };

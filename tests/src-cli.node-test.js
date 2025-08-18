@@ -20,13 +20,13 @@ export default {
     const out = await run(['-b', '-w', '-l', 'verbose', '-d', '200', 'counter']);
     const txt = stripAnsi(out);
     const ok = /Applying pre-test browser delay: 200ms/.test(txt) && /Applying post-test browser delay: 200ms/.test(txt);
-    ok ? pass('ok') : fail(out);
+  ok ? pass('CLI printed verbose delay logs for browser run') : fail(`Unexpected CLI output:\n${out}`);
   },
   'node-only ignores delay and still runs filtered tests': async ({ pass, fail }) => {
     const out = await run(['-n', '-l', 'minimal', 'example']);
     const txt = stripAnsi(out);
     const hasSummary = /=== Test Summary ===/.test(txt) && /Total Tests:\s*\d+/.test(txt);
     const noBrowser = !/=== Browser Test Results ===/.test(txt) && !/Running Browser test:/.test(txt);
-    hasSummary && noBrowser ? pass('ok') : fail(out);
+  hasSummary && noBrowser ? pass('Node-only run produced summary without browser section') : fail(`Unexpected CLI output:\n${out}`);
   }
 };

@@ -22,8 +22,8 @@ export default {
       document.body.appendChild(t);
       await nextTick();
 
-      const hasPlay = !!t.shadowRoot.querySelector('div[slot="actions"] ktf-icon[name="play"]');
-      if (hasPlay) pass('ok'); else fail('missing play icon');
+    const hasPlay = !!t.shadowRoot.querySelector('div[slot="actions"] ktf-icon[name="play"]');
+    if (hasPlay) pass('Test component renders with initial play icon'); else fail('Missing play icon on Test component');
     } catch (e) { fail(e.stack || String(e)); }
   },
 
@@ -50,7 +50,7 @@ export default {
       t.status = 'fail';
       await nextTick();
       const failOk = t.getAttribute('status') === 'fail' || t.status === 'fail';
-      if (running && passOk && failOk) pass('ok'); else fail('status transitions failed');
+  if (running && passOk && failOk) pass('Test component reflected status transitions running→pass→fail'); else fail('Status transitions failed to reflect on Test');
     } catch (e) { fail(e.stack || String(e)); }
   }
 };

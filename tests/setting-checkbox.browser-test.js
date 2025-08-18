@@ -8,7 +8,7 @@ export const beforeEach = async () => {
 };
 
 export default {
-  'SettingCheckbox reflects and updates settings': async ({ pass, fail }) => {
+  'SettingCheckbox reflects and updates settings': async ({ pass, fail, log }) => {
     try {
       await import('/gui/components/settingsStore.js');
       await import('/gui/components/SettingCheckbox.js');
@@ -19,15 +19,16 @@ export default {
       document.body.appendChild(el);
       await nextTick();
       const input = el.querySelector('input[type="checkbox"]');
-      const before = input.checked === false;
+    const before = input.checked === false;
       input.checked = true; input.dispatchEvent(new Event('change'));
       await nextTick();
       const after = window.KTF_SETTINGS.get().showBrowser === true;
-      if (before && after) pass('ok'); else fail('setting checkbox did not update');
+    log(`Checkbox before:${before} after:${after}`);
+    if (before && after) pass('SettingCheckbox updated setting from false to true'); else fail('SettingCheckbox did not update setting');
     } catch (e) { fail(e.stack || String(e)); }
   },
 
-  'SettingCheckbox unchecks updates back to false': async ({ pass, fail }) => {
+  'SettingCheckbox unchecks updates back to false': async ({ pass, fail, log }) => {
     try {
       await import('/gui/components/settingsStore.js');
       await import('/gui/components/SettingCheckbox.js');
@@ -40,7 +41,8 @@ export default {
       input.checked = false; input.dispatchEvent(new Event('change'));
       await nextTick();
       const after = window.KTF_SETTINGS.get().showBrowser === false;
-      if (after) pass('ok'); else fail('uncheck did not update');
+    log(`Setting after uncheck:${after}`);
+    if (after) pass('SettingCheckbox updated setting back to false'); else fail('Uncheck did not update setting');
     } catch (e) { fail(e.stack || String(e)); }
   }
 };

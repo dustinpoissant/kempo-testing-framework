@@ -32,23 +32,23 @@ const runWithArgs = (args, timeoutMs = 3000) => new Promise((resolve) => {
 export default {
   'maps -l 3 to logLevel 3': async ({ pass, fail }) => {
     const out = await runWithArgs(['-l', '3']);
-    out.includes('logLevel: 3') ? pass('ok') : fail(out);
+  out.includes('logLevel: 3') ? pass('Parsed -l 3 to logLevel 3') : fail(`Output did not include expected logLevel=3:\n${out}`);
   },
   'maps -l debug to logLevel 4': async ({ pass, fail }) => {
     const out = await runWithArgs(['-l', 'debug']);
-    out.includes('logLevel: 4') ? pass('ok') : fail(out);
+  out.includes('logLevel: 4') ? pass('Parsed -l debug to logLevel 4') : fail(`Output did not include expected logLevel=4:\n${out}`);
   },
   'maps -l v to logLevel 3': async ({ pass, fail }) => {
     const out = await runWithArgs(['-l', 'v']);
-    out.includes('logLevel: 3') ? pass('ok') : fail(out);
+  out.includes('logLevel: 3') ? pass('Parsed -l v to logLevel 3') : fail(`Output did not include expected logLevel=3:\n${out}`);
   },
   'passes --delay value as delay flag': async ({ pass, fail }) => {
     const out = await runWithArgs(['--delay', '2000']);
-    (out.includes("delay: '2000'") || out.includes('delay: 2000')) ? pass('ok') : fail(out);
+  (out.includes("delay: '2000'") || out.includes('delay: 2000')) ? pass('Parsed --delay 2000 into flags output') : fail(`Output did not include expected delay:\n${out}`);
   },
   'combines log-level and delay flags': async ({ pass, fail }) => {
     const out = await runWithArgs(['-l', 'minimal', '--delay', '250']);
     const ok = out.includes('logLevel: 1') && (out.includes("delay: '250'") || out.includes('delay: 250'));
-    ok ? pass('ok') : fail(out);
+  ok ? pass('Parsed and combined -l minimal with --delay 250') : fail(`Output missing expected flags:\n${out}`);
   },
 };

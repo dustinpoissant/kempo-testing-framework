@@ -18,7 +18,7 @@ export default {
       window.KTF_SETTINGS.set({ theme: 'dark' });
       await nextTick();
       const themeAttr = document.documentElement.getAttribute('theme');
-      if (themeAttr === 'dark') pass('ok'); else fail(`theme not applied: ${themeAttr}`);
+    if (themeAttr === 'dark') pass('Theme component applied document theme to dark'); else fail(`Theme not applied: ${themeAttr}`);
     } catch (e) { fail(e.stack || String(e)); }
   },
 
@@ -32,7 +32,7 @@ export default {
       window.KTF_SETTINGS.set({ theme: 'light' });
       await nextTick();
       const themeAttr = document.documentElement.getAttribute('theme');
-      if (themeAttr === 'light') pass('ok'); else fail(`theme not applied: ${themeAttr}`);
+    if (themeAttr === 'light') pass('Theme component applied document theme back to light'); else fail(`Theme not applied: ${themeAttr}`);
     } catch (e) { fail(e.stack || String(e)); }
   }
 };

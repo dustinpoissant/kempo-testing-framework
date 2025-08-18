@@ -8,7 +8,7 @@ export const beforeEach = async () => {
 };
 
 export default {
-  'Icon loads via fetch and caches results': async ({ pass, fail }) => {
+  'Icon loads via fetch and caches results': async ({ pass, fail, log }) => {
     try {
       await import('/gui/components/Icon.js');
       const originalFetch = window.fetch;
@@ -25,6 +25,7 @@ export default {
       document.body.appendChild(a);
       await nextTick(); await nextTick();
       const firstLoaded = a.shadowRoot.innerHTML.includes('id="ok"');
+    log(`Network calls after first icon: ${calls}`);
       window.fetch = async () => { throw new Error('blocked'); };
       const b = document.createElement('ktf-icon');
       b.name = 'test';
@@ -32,7 +33,7 @@ export default {
       await nextTick(); await nextTick();
       const secondLoaded = b.shadowRoot.innerHTML.includes('id="ok"');
       window.fetch = originalFetch;
-      if (firstLoaded && secondLoaded) pass('ok'); else fail('icon did not cache/fetch as expected');
+    if (firstLoaded && secondLoaded) pass('Icon fetched once and loaded cached SVG subsequently'); else fail('Icon did not cache/fetch as expected');
     } catch (e) { fail(e.stack || String(e)); }
   },
 
@@ -47,7 +48,7 @@ export default {
       await nextTick(); await nextTick();
       const hasSvg = a.shadowRoot.innerHTML.includes('<svg');
       window.fetch = originalFetch;
-      if (hasSvg) pass('ok'); else fail('fallback svg missing');
+    if (hasSvg) pass('Fallback SVG rendered when fetch failed'); else fail('Fallback SVG missing when fetch failed');
     } catch (e) { fail(e.stack || String(e)); }
   }
 };
