@@ -24,6 +24,8 @@
       
   </ktf-collapsible>
 
+  <ktf-test-framework id="framework">
+  <ktf-test-summary id="globalSummary"></ktf-test-summary>
   <div id="nodeTestsContainer">
     <h2>Node Tests</h2>
     <div id="nodeTests"></div>
@@ -32,15 +34,18 @@
     <h2>Browser Tests</h2>
     <div id="browserTests"></div>
   </div>
+  </ktf-test-framework>
 </main>
 <script type="module">
-  import '/components/TestFile.js';
+  import '/components/TestSuite.js';
   import '/components/Icon.js';
   import '/components/Theme.js';
   import '/components/Collapsible.js';
   import '/components/SettingSelect.js';
   import '/components/SettingCheckbox.js';
   import '/components/SettingNumber.js';
+  import '/components/TestSummary.js';
+  import '/components/TestFramework.js';
   import { getSettings, setSettings, subscribe } from '/components/settingsStore.js';
   
   // Apply theme to document on load and when settings change
@@ -81,7 +86,7 @@
   } else {
     const browserTestsContainer = document.getElementById('browserTests');
     testFiles.browserTests.forEach(browserTest => {
-      const testFileElement = document.createElement('ktf-test-file');
+      const testFileElement = document.createElement('ktf-test-suite');
       testFileElement.file = browserTest.file;
       testFileElement.testNames = browserTest.testNames;
       browserTestsContainer.appendChild(testFileElement);
@@ -92,7 +97,7 @@
   } else {
     const nodeTestsContainer = document.getElementById('nodeTests');
     testFiles.nodeTests.forEach(nodeTest => {
-      const testFileElement = document.createElement('ktf-test-file');
+      const testFileElement = document.createElement('ktf-test-suite');
       testFileElement.file = nodeTest.file;
       testFileElement.testNames = nodeTest.testNames || [];
       nodeTestsContainer.appendChild(testFileElement);

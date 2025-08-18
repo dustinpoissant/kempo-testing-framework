@@ -1,4 +1,4 @@
-// Browser tests for TestFile component
+// Browser tests for TestSuite component
 
 const nextTick = () => new Promise(r => setTimeout(r));
 
@@ -8,16 +8,16 @@ export const beforeEach = async () => {
 };
 
 export default {
-  'TestFile renders children and initial play icon': async ({ pass, fail }) => {
+  'TestSuite renders children and initial play icon': async ({ pass, fail }) => {
     try {
       await import('/gui/components/settingsStore.js');
       await import('/gui/components/Collapsible.js');
       await import('/gui/components/Logs.js');
       await import('/gui/components/Icon.js');
       await import('/gui/components/Test.js');
-      await import('/gui/components/TestFile.js');
+  await import('/gui/components/TestSuite.js');
 
-      const tf = document.createElement('ktf-test-file');
+  const tf = document.createElement('ktf-test-suite');
       tf.file = 'tests/example.node-test.js';
       tf.testNames = ['A', 'B'];
       document.body.appendChild(tf);
@@ -28,22 +28,22 @@ export default {
     } catch (e) { fail(e.stack || String(e)); }
   },
 
-  'TestFile aggregates status from children': async ({ pass, fail }) => {
+  'TestSuite aggregates status from children': async ({ pass, fail }) => {
     try {
       await import('/gui/components/settingsStore.js');
       await import('/gui/components/Collapsible.js');
       await import('/gui/components/Logs.js');
       await import('/gui/components/Icon.js');
       await import('/gui/components/Test.js');
-      await import('/gui/components/TestFile.js');
+  await import('/gui/components/TestSuite.js');
 
-      const tf = document.createElement('ktf-test-file');
+  const tf = document.createElement('ktf-test-suite');
       tf.file = 'tests/example.node-test.js';
       tf.testNames = ['A', 'B'];
       document.body.appendChild(tf);
       await nextTick(); await nextTick();
 
-      const children = tf.shadowRoot.querySelectorAll('ktf-test');
+  const children = tf.querySelectorAll('ktf-test');
       children[0].status = 'running';
       await nextTick();
       const statusRunning = tf.getAttribute('status') === 'running' || tf.status === 'running';

@@ -45,8 +45,9 @@ export default async ({
       await sleep(delayMs);
     }
 
-    await page.goto(`${url}?testFile=${testFile}&testFilter=${filter}&delay=${delayMs}`);
-    await page.waitForFunction(() => window.results !== undefined);
+  await page.goto(`${url}?testFile=${testFile}&testFilter=${filter}&delay=${delayMs}`);
+  await page.waitForFunction(() => document.readyState === 'complete' || document.readyState === 'interactive');
+  await page.waitForFunction(() => window.results !== undefined);
     const results = await page.evaluate(() => window.results);
 
     // Optional post-delay when a visible browser is requested

@@ -84,4 +84,24 @@ Create utility functions for shared logic.
   - If the shared logic is used in a single file, define a utility function in that file.
   - If the shared logic is used in multiple files, create a utility function module file in `src/utils/`.
 
+### Naming
+Do not prefix identifiers with underscores.
+  - Never use leading underscores (`_`) for variable, property, method, or function names.
+  - Use clear, descriptive names without prefixes.
+  - When true privacy is needed inside classes, prefer native JavaScript private fields (e.g., `#myField`) instead of simulated privacy via underscores.
+
 ## Lit Components
+
+### Component Architecture and Communication
+
+- Prefer direct method calls to trigger behavior. Do not dispatch custom events to make something happen. Use events only to inform that something already happened.
+  - Do: `this.closest('ktf-test-framework').enqueueTest({...});`
+  - Don’t: `this.closest('ktf-test-framework').dispatchEvent(new CustomEvent('enqueue', {...}))` to trigger logic.
+
+- Containment-first design: place orchestrators (e.g., `ktf-test-framework`) as a parent that wraps all dependent components (summary, suites, tests). Children should locate the parent with `closest('ktf-test-framework')` and call its methods.
+  - Parents may query their own subtree (`this.querySelectorAll(...)`) to find children.
+
+- Avoid window globals and window-scoped events for app logic. Scope cross-component events to the containing framework element when possible. Window events are reserved for process-wide concerns (e.g., settings store changes).
+
+- Status and UI mapping: queued status should render the `scheduled` icon; running may use spin animation.
+

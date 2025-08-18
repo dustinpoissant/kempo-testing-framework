@@ -100,14 +100,16 @@ export const startServer = async (_port = 3000) => {
         }
       }
     });
-    await server.listen(port);
+    await new Promise((resolve, reject) => {
+      server.listen(port, err => err ? reject(err) : resolve());
+    });
   }
   return `http://localhost:${port}`;
 };
 
 export const stopServer = async () => {
   if(server){
-    await server.close();
+  await new Promise(resolve => server.close(resolve));
     server = null;
   }
 };
