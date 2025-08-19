@@ -8,16 +8,24 @@
 <body>
   <script type="module">
     import runTests from './runTests.js';
-    const urlParams = new URLSearchParams(window.location.search);
-    const testFile = urlParams.get('testFile');
-    const testFilter = urlParams.get('testFilter');
-    const delay = parseInt(urlParams.get('delay') || '0', 10) || 0;
-    if(!testFile){
-      throw new Error('No test file provided');
-    }
-    const testsModule = await import(`/${testFile}`);
-    const results = await runTests(testsModule, testFilter, delay);
-    window.results = results;
+    
+    (async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const testFile = urlParams.get('testFile');
+        const testFilter = urlParams.get('testFilter');
+        const delay = parseInt(urlParams.get('delay') || '0', 10) || 0;
+        if(!testFile){
+          throw new Error('No test file provided');
+        }
+        const testsModule = await import(`/${testFile}`);
+        const results = await runTests(testsModule, testFilter, delay);
+        window.results = results;
+      } catch (error) {
+        console.error('Browser test error:', error);
+        window.error = error.message || String(error);
+      }
+    })();
   </script>
 </body>
 </html>

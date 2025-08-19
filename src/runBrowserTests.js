@@ -45,9 +45,17 @@ export default async ({
       await sleep(delayMs);
     }
 
-  await page.goto(`${url}?testFile=${testFile}&testFilter=${filter}&delay=${delayMs}`);
-  await page.waitForFunction(() => document.readyState === 'complete' || document.readyState === 'interactive');
-  await page.waitForFunction(() => window.results !== undefined);
+    await page.goto(`${url}?testFile=${testFile}&testFilter=${filter}&delay=${delayMs}`);
+    await page.waitForFunction(() => document.readyState === 'complete' || document.readyState === 'interactive');
+    
+    // Check for any errors first
+    const hasError = await page.evaluate(() => window.error !== undefined);
+    if (hasError) {
+      const error = await page.evaluate(() => window.error);
+      throw new Error(`Browser test error: ${error}`);
+    }
+    
+    await page.waitForFunction(() => window.results !== undefined, { timeout: 20000 });
     const results = await page.evaluate(() => window.results);
 
     // Optional post-delay when a visible browser is requested
