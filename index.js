@@ -10,7 +10,8 @@ const shortFlagMap = {
     'd': 'delay',
     'p': 'port',
     'g': 'gui',
-    'w': 'show-browser'
+    'w': 'show-browser',
+    'h': 'help'
 };
 
 /*
@@ -22,7 +23,7 @@ const remainingArgs = [];
 
 // Define which flags take values vs booleans
 const valueFlags = new Set(['log-level', 'delay', 'port']);
-const booleanFlags = new Set(['browser', 'node', 'gui', 'show-browser']);
+const booleanFlags = new Set(['browser', 'node', 'gui', 'show-browser', 'help']);
 
 for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -109,14 +110,47 @@ if (Object.prototype.hasOwnProperty.call(flags, 'log-level')) {
 }
 
 /*
+ * Help Display
+ */
+if (flags.help || flags.h) {
+    console.log(`
+Kempo Testing Framework
+
+USAGE:
+  kempo-test [OPTIONS] [SUITE_FILTER] [TEST_FILTER]
+
+OPTIONS:
+  -h, --help              Show this help message and exit
+  -b, --browser           Run only browser tests
+  -n, --node              Run only node tests
+  -l, --log-level LEVEL   Set log level (0-4 or silent/minimal/normal/verbose/debug)
+  -d, --delay MS          Add delay between tests in milliseconds
+  -p, --port PORT         Set port for test server (default: 3000)
+  -g, --gui               Launch GUI mode
+  -w, --show-browser      Show browser window during tests
+
+ARGUMENTS:
+  SUITE_FILTER           Filter test suites by name
+  TEST_FILTER            Filter individual tests by name
+
+EXAMPLES:
+  kempo-test                    # Run all tests
+  kempo-test --browser          # Run only browser tests
+  kempo-test -l verbose         # Run with verbose logging
+  kempo-test --gui              # Launch GUI mode
+  kempo-test myComponent        # Run tests for 'myComponent' suite
+  kempo-test myComponent myTest # Run specific test in specific suite
+`);
+    process.exit(0);
+}
+
+/*
  * Mode Selection and Execution
  */
 if (flags.gui) {
     const { default: gui } = await import('./src/gui.js');
     await gui(flags, remainingArgs);
 } else {
-    // Log flags to verify capture
-    console.log('kempo-test flags:', flags);
     const { default: cli } = await import('./src/cli.js');
     await cli(flags, remainingArgs);
 }

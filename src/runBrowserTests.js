@@ -48,6 +48,14 @@ export default async ({
     await page.goto(`${url}?testFile=${testFile}&testFilter=${filter}&delay=${delayMs}`);
     await page.waitForFunction(() => document.readyState === 'complete' || document.readyState === 'interactive');
     
+    // Ensure the test page has focus when browser is visible
+    if (showBrowser) {
+      await page.bringToFront();
+      if (logLevel >= LOG_LEVELS.VERBOSE) {
+        console.log(`\x1b[90m Bringing test page to front\x1b[0m`);
+      }
+    }
+    
     // Check for any errors first
     const hasError = await page.evaluate(() => window.error !== undefined);
     if (hasError) {
