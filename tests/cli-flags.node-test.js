@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 
 const runWithArgs = (args, timeoutMs = 3000) => new Promise((resolve) => {
-  const child = spawn(process.execPath, ['index.js', ...args], {
+  const child = spawn(process.execPath, ['index.js', ...args, '--debug-flags'], {
     cwd: process.cwd(),
     stdio: ['ignore', 'pipe', 'pipe']
   });

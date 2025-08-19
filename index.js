@@ -23,7 +23,7 @@ const remainingArgs = [];
 
 // Define which flags take values vs booleans
 const valueFlags = new Set(['log-level', 'delay', 'port']);
-const booleanFlags = new Set(['browser', 'node', 'gui', 'show-browser', 'help']);
+const booleanFlags = new Set(['browser', 'node', 'gui', 'show-browser', 'help', 'debug-flags']);
 
 for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -142,6 +142,13 @@ EXAMPLES:
   kempo-test myComponent myTest # Run specific test in specific suite
 `);
     process.exit(0);
+}
+
+/*
+ * Debug Flags (for testing only)
+ */
+if (flags['debug-flags']) {
+    console.log('kempo-test flags:', flags);
 }
 
 /*
