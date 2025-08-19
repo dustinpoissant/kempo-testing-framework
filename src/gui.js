@@ -33,9 +33,28 @@ export default async (flags, args) => {
       try {
         const testFiles = await findTests('', '', true, true);
         
-        // Extract test names from Node test files (safe to import in Node.js)
+        // Categorize test files properly
+        const nodeOnlyTests = [];
+        const browserOnlyTests = [];
+        const universalTests = [];
+        
+        // Process all found test files and categorize them
+        const allTestFiles = new Set([...testFiles.nodeTests, ...testFiles.browserTests]);
+        
+        for (const file of allTestFiles) {
+          if (file.endsWith('.test.js')) {
+            universalTests.push(file);
+          } else if (file.endsWith('.node-test.js')) {
+            nodeOnlyTests.push(file);
+          } else if (file.endsWith('.browser-test.js')) {
+            browserOnlyTests.push(file);
+          }
+        }
+        
+        // Extract test names from Node-accessible test files (node-only and universal)
+        const nodeAccessibleTests = [...nodeOnlyTests, ...universalTests];
         const nodeTestsWithNames = await Promise.all(
-          testFiles.nodeTests.map(async file => {
+          nodeAccessibleTests.map(async file => {
             try {
               // Convert forward slashes back to OS-specific path separators for import
               const normalizedFile = file.replace(/\//g, path.sep);
@@ -48,13 +67,18 @@ export default async (flags, args) => {
             }
           })
         );
+        
+        // Separate the results back into node-only and universal
+        const nodeOnlyWithNames = nodeTestsWithNames.filter(test => test.file.endsWith('.node-test.js'));
+        const universalWithNames = nodeTestsWithNames.filter(test => test.file.endsWith('.test.js'));
 
-        // Browser tests just return file names (test names will be extracted client-side)
-        const browserTestsWithNames = testFiles.browserTests.map(file => ({ file, testNames: null }));
+        // Browser-only tests just return file names (test names will be extracted client-side)
+        const browserOnlyWithNames = browserOnlyTests.map(file => ({ file, testNames: null }));
 
         const result = {
-          nodeTests: nodeTestsWithNames,
-          browserTests: browserTestsWithNames
+          nodeTests: nodeOnlyWithNames,
+          browserTests: browserOnlyWithNames,
+          universalTests: universalWithNames
         };
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -105,12 +129,25 @@ export default async (flags, args) => {
       const testNames = testNamesParam ? testNamesParam.split(',') : [];
       const showBrowserParam = url.searchParams.get('showBrowser');
       const showBrowser = showBrowserParam === 'true';
-     const delayMs = Math.max(0, parseInt(url.searchParams.get('delayMs')||'0', 10) || 0);
+      const delayMs = Math.max(0, parseInt(url.searchParams.get('delayMs')||'0', 10) || 0);
+      const environment = url.searchParams.get('environment'); // 'node', 'browser', or null for auto-detect
 
       try {
-        // Determine if this is a browser or node test based on file extension
-        const isBrowserTest = testFile.endsWith('.browser-test.js') || testFile.endsWith('.test.js');
-        const isNodeTest = testFile.endsWith('.node-test.js') || testFile.endsWith('.test.js');
+        let isBrowserTest, isNodeTest;
+        
+        if (environment === 'node') {
+          // Force Node-only execution
+          isBrowserTest = false;
+          isNodeTest = true;
+        } else if (environment === 'browser') {
+          // Force Browser-only execution  
+          isBrowserTest = true;
+          isNodeTest = false;
+        } else {
+          // Auto-detect based on file extension (original behavior)
+          isBrowserTest = testFile.endsWith('.browser-test.js') || testFile.endsWith('.test.js');
+          isNodeTest = testFile.endsWith('.node-test.js') || testFile.endsWith('.test.js');
+        }
         
         if (!isBrowserTest && !isNodeTest) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -138,6 +175,7 @@ export default async (flags, args) => {
         res.end(JSON.stringify({
           testFile,
           testNames,
+          environment: environment || (isBrowserTest && isNodeTest ? 'both' : (isBrowserTest ? 'browser' : 'node')),
           results: fileResults
         }));
       } catch (error) {

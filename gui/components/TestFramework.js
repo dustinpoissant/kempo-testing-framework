@@ -151,6 +151,8 @@ class TestFrameworkEl extends LitElement {
   };
 
   runSuite = async ({ file, testNames, el }) => {
+    const isUniversal = el.hasAttribute('universal');
+    
     try {
       el.status = 'running';
   const tests = Array.from(el.querySelectorAll('ktf-test'));
@@ -162,7 +164,147 @@ class TestFrameworkEl extends LitElement {
       const fileLogsEl = el.renderRoot?.getElementById('fileLogs');
       if(fileLogsEl) fileLogsEl.clear();
     } catch {}
+    
     const { showBrowser, delayMs } = getSettings();
+    
+    // For universal tests, run both environments
+    if (isUniversal && file.endsWith('.test.js')) {
+      try {
+        // Run both Node and Browser tests
+        const [nodeResp, browserResp] = await Promise.all([
+          fetch(`/runTest?testFile=${encodeURIComponent(file)}&environment=node&showBrowser=false&delayMs=${Number(delayMs||0)}`),
+          fetch(`/runTest?testFile=${encodeURIComponent(file)}&environment=browser&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`)
+        ]);
+        
+        let nodeData = null, browserData = null;
+        try { nodeData = await nodeResp.json(); } catch {}
+        try { browserData = await browserResp.json(); } catch {}
+        
+        const fileLogsEl = el.renderRoot?.getElementById('fileLogs');
+        const heading = msg => ({ message: msg, type: 'progress', level: 3 });
+        
+        // Combine results from both environments
+        let combinedResults = { tests: {}, beforeAllLogs: [], afterAllLogs: [] };
+        let hasErrors = false;
+        
+        if (!nodeResp.ok || (nodeData && nodeData.error)) {
+          hasErrors = true;
+          const msg = nodeData?.details || nodeData?.error || `Node: ${nodeResp.status} ${nodeResp.statusText}`;
+          if (fileLogsEl) fileLogsEl.addLog({ message: `Error running Node tests: ${msg}`, type: 'error', level: 3 });
+        } else {
+          const nodeResults = nodeData?.results || {};
+          if (fileLogsEl && nodeResults.beforeAllLogs?.length) {
+            fileLogsEl.addLog(heading('== Node Before All Logs =='), ...nodeResults.beforeAllLogs);
+          }
+          // Merge node test results with 'Node: ' prefix
+          Object.entries(nodeResults.tests || {}).forEach(([testName, testInfo]) => {
+            combinedResults.tests[testName] = {
+              ...testInfo,
+              logs: [
+                heading('== Node Environment =='),
+                ...(testInfo.logs || [])
+              ]
+            };
+          });
+        }
+        
+        if (!browserResp.ok || (browserData && browserData.error)) {
+          hasErrors = true;
+          const msg = browserData?.details || browserData?.error || `Browser: ${browserResp.status} ${browserResp.statusText}`;
+          if (fileLogsEl) fileLogsEl.addLog({ message: `Error running Browser tests: ${msg}`, type: 'error', level: 3 });
+        } else {
+          const browserResults = browserData?.results || {};
+          if (fileLogsEl && browserResults.beforeAllLogs?.length) {
+            fileLogsEl.addLog(heading('== Browser Before All Logs =='), ...browserResults.beforeAllLogs);
+          }
+          // Merge browser test results
+          Object.entries(browserResults.tests || {}).forEach(([testName, testInfo]) => {
+            if (combinedResults.tests[testName]) {
+              // Combine with existing node results
+              combinedResults.tests[testName].logs.push(
+                heading('== Browser Environment =='),
+                ...(testInfo.logs || [])
+              );
+              // Test passes only if both environments pass
+              combinedResults.tests[testName].passed = combinedResults.tests[testName].passed && testInfo.passed;
+            } else {
+              // Browser-only result (shouldn't happen for universal tests, but handle it)
+              combinedResults.tests[testName] = {
+                ...testInfo,
+                logs: [
+                  heading('== Browser Environment =='),
+                  ...(testInfo.logs || [])
+                ]
+              };
+            }
+          });
+        }
+        
+        if (hasErrors) {
+          try {
+            const tests = Array.from(el.querySelectorAll('ktf-test'));
+            for(const t of tests){ t.status = 'fail'; }
+            el.status = 'fail';
+          } catch {}
+          return;
+        }
+        
+        // Update test elements with combined results
+        const testsMap = combinedResults.tests;
+        try {
+          const tests = Array.from(el.querySelectorAll('ktf-test'));
+          for(const t of tests){
+            const name = t.name;
+            const info = testsMap[name];
+            const logsEl = t.renderRoot?.getElementById('logs');
+            if(logsEl && info){
+              logsEl.addLog(...(info.logs || []));
+            }
+            t.status = info?.passed ? 'pass' : 'fail';
+          }
+          
+          if(fileLogsEl){
+            const names = Object.keys(testsMap);
+            const total = names.length;
+            const passed = names.reduce((acc, n) => acc + (testsMap[n]?.passed ? 1 : 0), 0);
+            const failed = total - passed;
+            if(total>0){
+              fileLogsEl.addLog(
+                { message: '=== Universal Test Summary (Node + Browser) ====', type: 'summary', level: 1 },
+                { message: `Total Tests: ${total}`, type: 'summary', level: 1 },
+                { message: `Passed in Both Environments: ${passed}`, type: passed>0 ? 'pass' : 'log', level: 1 },
+                { message: `Failed in At Least One Environment: ${failed}`, type: failed>0 ? 'fail' : 'log', level: 1 },
+                failed===0
+                  ? { message: 'All tests passed in both environments!', type: 'pass', level: 1 }
+                  : { message: 'Some tests failed. See details above.', type: 'fail', level: 1 }
+              );
+            }
+          }
+          
+          // Recalculate suite status
+          const testEls = el.querySelectorAll('ktf-test');
+          const statuses = Array.from(testEls).map(x=>x.status);
+          let suiteStatus = 'notran';
+          if(statuses.includes('running')) suiteStatus = 'running';
+          else if(statuses.includes('fail')) suiteStatus = 'fail';
+          else if(statuses.length && statuses.every(s => s==='pass')) suiteStatus = 'pass';
+          el.status = suiteStatus;
+        } catch {}
+        
+      } catch (error) {
+        console.error('Error running universal test:', error);
+        try {
+          const fileLogsEl = el.renderRoot?.getElementById('fileLogs');
+          if(fileLogsEl) fileLogsEl.addLog({ message: `Error running universal test: ${error.message}`, type: 'error', level: 3 });
+          const tests = Array.from(el.querySelectorAll('ktf-test'));
+          for(const t of tests){ t.status = 'fail'; }
+          el.status = 'fail';
+        } catch {}
+      }
+      return;
+    }
+    
+    // Original single-environment logic for non-universal tests
     const resp = await fetch(`/runTest?testFile=${encodeURIComponent(file)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`);
     let data = null;
     try { data = await resp.json(); } catch {}
