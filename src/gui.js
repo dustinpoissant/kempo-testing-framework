@@ -1,6 +1,7 @@
 import http from 'http';
 import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import path from 'path';
 import { exec } from 'child_process';
 import { platform } from 'os';
@@ -9,6 +10,7 @@ import runTestFiles from './runTestFiles.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 export default async (flags, args) => {
   const server = http.createServer(async (req, res) => {
@@ -22,8 +24,19 @@ export default async (flags, args) => {
       Serve kempo.css
     */
     if(basePath === '/kempo.css'){
-      res.writeHead(200, { 'Content-Type': 'text/css' });
-      res.end(await readFile(path.join(__dirname, '../node_modules/kempo-css/dist/kempo.min.css'), 'utf8'));
+      try {
+        // Try to resolve kempo-css package from current location
+        // This will work whether this package is standalone or installed as a dependency
+        const kempoPackagePath = path.dirname(require.resolve('kempo-css/package.json', { paths: [__dirname] }));
+        const kempoCssPath = path.join(kempoPackagePath, 'dist/kempo.min.css');
+        
+        res.writeHead(200, { 'Content-Type': 'text/css' });
+        res.end(await readFile(kempoCssPath, 'utf8'));
+      } catch (error) {
+        console.error('Error serving kempo.css:', error);
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('kempo-css not found');
+      }
     } 
     
     /*
