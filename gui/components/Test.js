@@ -46,7 +46,7 @@ window.customElements.define('ktf-test', class extends LitElement {
 	render(){
 		if(!this.file || !this.name) return html``;
 		return html`
-			<link rel="stylesheet" href="/essential.css">
+			<link rel="stylesheet" href="/kempo.css">
 			<ktf-collapsible>
 				<span slot="title" id="title" class="-ml">
 					${this.name}

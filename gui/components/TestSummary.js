@@ -126,7 +126,7 @@ window.customElements.define('ktf-test-summary', class extends LitElement {
     const f = this.fileCounts;
     const t = this.testCounts;
     return html`
-      <link rel="stylesheet" href="/essential.css">
+      <link rel="stylesheet" href="/kempo.css">
   <ktf-collapsible opened>
         <span slot="title" class="-ml"><b>Test Summary</b></span>
   <div slot="actions">

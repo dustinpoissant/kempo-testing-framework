@@ -15,7 +15,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "essentialcss": "^3.0.0",
+    "kempo-css": "^1.0.2",
     "puppeteer": "^24.9.0"
   }
 }

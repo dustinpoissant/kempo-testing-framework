@@ -136,7 +136,7 @@ class TestSuiteEl extends LitElement {
     if(!this.file || !this.testNames.length) return html``;
     const titleText = this.file.replace('tests/', '').replace('.node-test.js', '').replace('.browser-test.js', '').replace('.test.js', '');
     return html`
-      <link rel="stylesheet" href="/essential.css">
+      <link rel="stylesheet" href="/kempo.css">
       <ktf-collapsible>
         <span slot="title" id="title" class="-ml">${titleText}</span>
         <div slot="actions">

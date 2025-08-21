@@ -54,7 +54,7 @@ window.customElements.define('ktf-logs', class extends LitElement {
     });
     if (!filtered.length) return html``;
     return html`
-      <link rel="stylesheet" href="/essential.css">
+      <link rel="stylesheet" href="/kempo.css">
       <ktf-collapsible opened>
         <span slot="title"><ktf-icon name="logs"></ktf-icon> Logs</span>
         <pre class="bg-alt -mx -mt p mb0 rb">${filtered.map(l => html`<div class="${l?.type || 'log'}">${l?.message ?? ''}</div>`)}</pre>

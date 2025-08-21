@@ -7,7 +7,7 @@
 
 ### GUI
 
-All files served by the GUI should be in the `gui/` directory, with the exception of scripts shared with the CLI, custom endpoints, and node_modules like essential.css (which should have custom endpoints).
+All files served by the GUI should be in the `gui/` directory, with the exception of scripts shared with the CLI, custom endpoints, and node_modules like kempo.css (which should have custom endpoints).
 
 ## Coding Style Guidelines
 

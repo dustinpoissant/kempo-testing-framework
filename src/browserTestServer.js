@@ -27,15 +27,15 @@ export const startServer = async (_port = 3000) => {
         const filePath = path.join(__dirname, 'runTests.js');
         res.end(await readFile(filePath, 'utf8'));
       }
-      // Serve essential.css like the GUI server does
-      else if (basePath === '/essential.css') {
+      // Serve kempo.css like the GUI server does
+      else if (basePath === '/kempo.css') {
         try {
-          const cssPath = path.join(__dirname, '../node_modules/essentialcss/dist/essential.min.css');
+          const cssPath = path.join(__dirname, '../node_modules/kempo-css/dist/kempo.min.css');
           const css = await readFile(cssPath, 'utf8');
           res.writeHead(200, { 'Content-Type': 'text/css' });
           res.end(css);
         } catch (error) {
-          console.error(`Error serving essential.css:`, error);
+          console.error(`Error serving kempo.css:`, error);
           res.writeHead(404);
           res.end('Not found');
         }

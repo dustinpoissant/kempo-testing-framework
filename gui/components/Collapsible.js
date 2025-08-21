@@ -28,7 +28,7 @@ window.customElements.define('ktf-collapsible', class extends LitElement {
 	*/
 	render(){
 		return html`
-			<link rel="stylesheet" href="/essential.css">
+			<link rel="stylesheet" href="/kempo.css">
 			<div class="header">
 				<div class="actions">
 					<slot name="actions"></slot>

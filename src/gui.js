@@ -19,11 +19,11 @@ export default async (flags, args) => {
     */
     
     /* 
-      Serve essential.css
+      Serve kempo.css
     */
-    if(basePath === '/essential.css'){
+    if(basePath === '/kempo.css'){
       res.writeHead(200, { 'Content-Type': 'text/css' });
-      res.end(await readFile(path.join(__dirname, '../node_modules/essentialcss/dist/essential.min.css'), 'utf8'));
+      res.end(await readFile(path.join(__dirname, '../node_modules/kempo-css/dist/kempo.min.css'), 'utf8'));
     } 
     
     /*
