@@ -1,9 +1,11 @@
+
 name: Publish Package to npmjs
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -21,6 +23,16 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm ci
+
+      # Auto-increment patch version, commit, and push
+      - name: Bump patch version
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          npm version patch --no-git-tag-version
+          git add package.json package-lock.json || true
+          git commit -m "ci: bump patch version [skip ci]" || echo "No changes to commit"
+          git push origin HEAD:main || echo "No changes to push"
 
       # If your package is public and scoped (e.g., @scope/name), keep --access public.
       # For unscoped public packages, you can omit --access.
