@@ -1,6 +1,6 @@
 {
   "name": "kempo-testing-framework",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "The Kempo Testing Framework is a simple testing framework built on the principle that code intended to be ran in the browser should be tested in the browser, code intended to be ran in Node should be tested in Node, and code intended to be ran in both should be tested in both. No mocking, no complexity—just testing.",
   "main": "index.js",
   "bin": {
@@ -17,10 +17,9 @@
   "dependencies": {
     "kempo-css": "^1.0.2",
     "puppeteer": "^24.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dustinpoissant/kempo-testing-framework"
   }
-    ,
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/dustinpoissant/kempo-testing-framework"
-    }
 }
