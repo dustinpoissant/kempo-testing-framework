@@ -66,7 +66,64 @@ Test files can export the following optional lifecycle functions:
 - **`beforeEach`** - Runs before each individual test
 - **`afterEach`** - Runs after each individual test
 
+
 **Note:** All test functions and lifecycle callbacks can be `async` functions if you need to await asynchronous operations.
+
+### Custom Test Pages for Browser Tests
+
+You can specify a custom HTML page for your browser tests by exporting a `page` string in your test file. This is useful for testing in a specific static environment or reusing a custom fixture across multiple test files.
+
+- The path should be relative to the test file location.
+- If no `page` export is present, the default test page (`test.html`) will be used.
+
+#### Example
+
+Suppose you have the following files in your `tests` directory:
+- `custom-test-page.html`
+- `custom-page.browser-test.js`
+
+Your test file:
+```javascript
+// tests/custom-page.browser-test.js
+export const page = './custom-test-page.html';
+
+export default {
+  'should find custom element in custom page': ({ pass, fail }) => {
+    const el = document.getElementById('custom-test-element');
+    if (el && el.textContent === 'Hello from custom page!') {
+      pass('Custom element found and content matches');
+    } else {
+      fail('Custom element not found or content mismatch');
+    }
+  }
+};
+```
+
+Your custom HTML page:
+```html
+<!-- tests/custom-test-page.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Test Page</title>
+</head>
+<body>
+  <div id="custom-test-element">Hello from custom page!</div>
+  <!-- The test runner will inject scripts here -->
+</body>
+</html>
+```
+
+When you run:
+```bash
+npx kempo-test custom-page
+```
+Kempo will serve your custom HTML page for this test file and inject the test runner, so your tests run in the context of your custom page.
+
+You can share the same custom page across multiple test files by exporting the appropriate relative path in each file.
+
+---
 
 ## Example Test File
 
