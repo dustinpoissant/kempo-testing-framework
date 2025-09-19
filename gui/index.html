@@ -5,29 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kempo Testing Library GUI</title>
   <link rel="stylesheet" href="/kempo.css" />
-  <style>
-    .loading-state {
-      padding: 1rem;
-      text-align: center;
-      color: #666;
-      font-style: italic;
-    }
-    
-    .empty-state {
-      padding: 1rem;
-      color: #888;
-      background-color: #f5f5f5;
-      border-radius: 4px;
-      margin: 0.5rem 0;
-    }
-    
-    .empty-state code {
-      background-color: #e8e8e8;
-      padding: 0.2rem 0.4rem;
-      border-radius: 3px;
-      font-family: monospace;
-    }
-  </style>
 </head>
 <body>
 <main>
@@ -52,20 +29,20 @@
   <div id="universalTestsContainer">
     <h2>Universal Tests</h2>
     <p>Tests that run in both Node and Browser environments</p>
-    <div id="universalTestsLoading" class="loading-state">Loading universal tests...</div>
-    <div id="universalTestsEmpty" class="empty-state" style="display: none;">No universal tests found. Create test files with <code>.test.js</code> extension to run tests in both environments.</div>
+    <div id="universalTestsLoading" class="p ta-center tc-muted" style="font-style: italic;">Loading universal tests...</div>
+    <div id="universalTestsEmpty" class="p bg-alt r my" style="display: none;">No universal tests found. Create test files with <code>.test.js</code> extension to run tests in both environments.</div>
     <div id="universalTests"></div>
   </div>
   <div id="nodeTestsContainer">
     <h2>Node Tests</h2>
-    <div id="nodeTestsLoading" class="loading-state">Loading Node tests...</div>
-    <div id="nodeTestsEmpty" class="empty-state" style="display: none;">No Node-only tests found. Create test files with <code>.node-test.js</code> extension to run tests only in Node.</div>
+    <div id="nodeTestsLoading" class="p ta-center tc-muted" style="font-style: italic;">Loading Node tests...</div>
+    <div id="nodeTestsEmpty" class="p bg-alt r my" style="display: none;">No Node-only tests found. Create test files with <code>.node-test.js</code> extension to run tests only in Node.</div>
     <div id="nodeTests"></div>
   </div>
   <div id="browserTestsContainer">
     <h2>Browser Tests</h2>
-    <div id="browserTestsLoading" class="loading-state">Loading browser tests...</div>
-    <div id="browserTestsEmpty" class="empty-state" style="display: none;">No browser-only tests found. Create test files with <code>.browser-test.js</code> extension to run tests only in the browser.</div>
+    <div id="browserTestsLoading" class="p ta-center tc-muted" style="font-style: italic;">Loading browser tests...</div>
+    <div id="browserTestsEmpty" class="p bg-alt r my" style="display: none;">No browser-only tests found. Create test files with <code>.browser-test.js</code> extension to run tests only in the browser.</div>
     <div id="browserTests"></div>
   </div>
   </ktf-test-framework>
