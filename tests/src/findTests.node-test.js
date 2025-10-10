@@ -1,12 +1,12 @@
-import findTests from '../src/findTests.js';
+import findTests from '../../src/findTests.js';
 
 export default {
   'finds node and browser test files with no filters': async ({ pass, fail, log }) => {
     try {
       const { nodeTests, browserTests } = await findTests('', '', true, true);
     log(`Found node tests: ${nodeTests.length}, browser tests: ${browserTests.length}`);
-      const hasCounter = browserTests.some(f => f.endsWith('tests/counter.browser-test.js'));
-      const hasExample = nodeTests.some(f => f.endsWith('tests/example.node-test.js'));
+      const hasCounter = browserTests.some(f => f.endsWith('tests/components/counter.browser-test.js'));
+      const hasExample = nodeTests.some(f => f.endsWith('tests/examples/example.node-test.js'));
     if (hasCounter && hasExample) pass('Discovered expected canonical files (counter + example)');
     else fail(`Missing expected files. node: ${JSON.stringify(nodeTests)}, browser: ${JSON.stringify(browserTests)}`);
     } catch (e) {
@@ -34,6 +34,23 @@ export default {
       const okA = a.browserTests.length === 0 && a.nodeTests.length > 0;
       const okB = b.nodeTests.length === 0 && b.browserTests.length > 0;
     okA && okB ? pass('Environment toggles respected (node-only / browser-only)') : fail(`Env mismatch: a=${JSON.stringify(a)}, b=${JSON.stringify(b)}`);
+    } catch (e) {
+      fail(e.stack || String(e));
+    }
+  },
+  'finds tests in nested subdirectories': async ({ pass, fail, log }) => {
+    try {
+      const { nodeTests, browserTests } = await findTests('', '', true, true);
+      log(`All node tests: ${nodeTests.length}, browser tests: ${browserTests.length}`);
+      
+      const hasNestedBrowser = browserTests.some(f => f.includes('tests/nested/nested.browser-test.js'));
+      const hasDeepNode = nodeTests.some(f => f.includes('tests/nested/deep/deep.node-test.js'));
+      
+      if (hasNestedBrowser && hasDeepNode) {
+        pass('Found tests in nested subdirectories');
+      } else {
+        fail(`Missing nested tests. hasNestedBrowser: ${hasNestedBrowser}, hasDeepNode: ${hasDeepNode}`);
+      }
     } catch (e) {
       fail(e.stack || String(e));
     }

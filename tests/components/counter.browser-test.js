@@ -1,4 +1,4 @@
-import './Counter.js';
+import '../fixtures/Counter.js';
 
 const wait = ms => new Promise(r=>setTimeout(r,ms));
 

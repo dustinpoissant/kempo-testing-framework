@@ -1,4 +1,4 @@
-export const page = './custom-test-page.html';
+export const page = '../fixtures/custom-test-page.html';
 
 export default {
   'should find custom element in custom page': ({ pass, fail }) => {

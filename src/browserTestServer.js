@@ -109,7 +109,13 @@ export const startServer = async (_port = 3000) => {
 
 export const stopServer = async () => {
   if(server){
-  await new Promise(resolve => server.close(resolve));
-    server = null;
+    // Close all connections and stop accepting new ones
+    await new Promise((resolve) => {
+      server.closeAllConnections?.(); // Close keep-alive connections if method exists
+      server.close(() => {
+        server = null;
+        resolve();
+      });
+    });
   }
 };

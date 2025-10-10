@@ -1,4 +1,4 @@
-import LOG_LEVELS from '../src/utils/logLevels.js';
+import LOG_LEVELS from '../../src/utils/logLevels.js';
 
 export default {
   'defines expected numeric levels': async ({ pass, fail, log }) => {

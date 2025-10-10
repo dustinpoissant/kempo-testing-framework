@@ -30,6 +30,8 @@ export default async (flags, args) => {
   const port = flags.port ? parseInt(flags.port, 10) : 3000;
   // Parse delay (milliseconds). Non-numeric or missing => 0
   const delayMs = Number.isFinite(parseInt(flags.delay, 10)) ? Math.max(0, parseInt(flags.delay, 10)) : 0;
+  // Parse timeout (milliseconds). Non-numeric or missing => 30000 (30 seconds)
+  const timeoutMs = Number.isFinite(parseInt(flags.timeout, 10)) ? Math.max(1000, parseInt(flags.timeout, 10)) : 30000;
 
   /*
    * Color Configuration
@@ -57,6 +59,7 @@ export default async (flags, args) => {
     port,
     logLevel,
     delayMs,
+    timeoutMs,
     onNodeTestStart: logLevel > LOG_LEVELS.MINIMAL ? (file) => {
       console.log(`${colors.cyan}Running Node test: ${file}${colors.reset}`);
     } : undefined,
@@ -192,7 +195,9 @@ const displaySummary = (nodeResults, browserResults, colors) => {
   console.log(`${colors.red}Failed:${colors.reset} ${failedTests}`);
   if(failedTests === 0){
     console.log(`\n${colors.green}${colors.bright}All tests passed!${colors.reset}`);
+    process.exit(0);
   } else {
     console.log(`\n${colors.red}${colors.bright}Some tests failed. See details above.${colors.reset}`);
+    process.exit(1);
   }
 };

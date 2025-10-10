@@ -1,4 +1,4 @@
-import runTestFiles from '../src/runTestFiles.js';
+import runTestFiles from '../../src/runTestFiles.js';
 
 export default {
   'discovers and runs node tests only when requested': async ({ pass, fail, log }) => {

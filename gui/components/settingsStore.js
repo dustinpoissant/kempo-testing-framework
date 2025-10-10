@@ -5,6 +5,7 @@ const DEFAULTS = {
   logLevel: 3,
   theme: 'auto',
   delayMs: 0,
+  timeoutMs: 30000,
 };
 
 let state = (() => {

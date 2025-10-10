@@ -51,4 +51,12 @@ export default {
     const ok = out.includes('logLevel: 1') && (out.includes("delay: '250'") || out.includes('delay: 250'));
   ok ? pass('Parsed and combined -l minimal with --delay 250') : fail(`Output missing expected flags:\n${out}`);
   },
+  'passes --timeout value as timeout flag': async ({ pass, fail }) => {
+    const out = await runWithArgs(['--timeout', '5000']);
+    (out.includes("timeout: '5000'") || out.includes('timeout: 5000')) ? pass('Parsed --timeout 5000 into flags output') : fail(`Output did not include expected timeout:\n${out}`);
+  },
+  'passes -t as short form of timeout flag': async ({ pass, fail }) => {
+    const out = await runWithArgs(['-t', '15000']);
+    (out.includes("timeout: '15000'") || out.includes('timeout: 15000')) ? pass('Parsed -t 15000 into flags output') : fail(`Output did not include expected timeout:\n${out}`);
+  }
 };

@@ -1,12 +1,21 @@
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
+const withTimeout = (promise, timeoutMs, testName) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error(`Test "${testName}" timed out after ${timeoutMs}ms`)), timeoutMs)
+    )
+  ]);
+};
+
 export default async ({
   beforeAll = async () => {},
   beforeEach = async () => {},
   afterEach = async () => {},
   afterAll = async () => {},
   default: tests
-} = {}, filter = false, delay = 0) => {
+} = {}, filter = false, delay = 0, timeoutMs = 30000) => {
   const testsToRun = filter ? Object.keys(tests).filter(name => name.trim().toLowerCase().includes(filter.trim().toLowerCase())) : Object.keys(tests);
   if(!testsToRun.length) throw new Error('No tests found matching the filter');
   
@@ -48,17 +57,28 @@ export default async ({
     log(`== Starting Test "${name}" ==`, 'progress', 3);
     log('== Before Each ==', 'progress', 3);
     await beforeEach(log);
-    await tests[name]({
-      log,
-      pass: message => {
-        result.passed = true;
-        log(message, 'pass', 2); // was 3; make visible at NORMAL
-      },
-      fail: message => {
-        result.passed = false;
-        log(message, 'fail', 2);
-      }
-    });
+    
+    try {
+      await withTimeout(
+        tests[name]({
+          log,
+          pass: message => {
+            result.passed = true;
+            log(message, 'pass', 2); // was 3; make visible at NORMAL
+          },
+          fail: message => {
+            result.passed = false;
+            log(message, 'fail', 2);
+          }
+        }),
+        timeoutMs,
+        name
+      );
+    } catch (error) {
+      result.passed = false;
+      log(error.message, 'fail', 2);
+    }
+    
     await afterEach(log);
     log('== After Each ==', 'progress', 3);
     if(!result.passed){ // If the test failed, elevate all logs to a level 2

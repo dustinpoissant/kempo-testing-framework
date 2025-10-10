@@ -11,6 +11,7 @@ const shortFlagMap = {
     'p': 'port',
     'g': 'gui',
     'w': 'show-browser',
+    't': 'timeout',
     'h': 'help'
 };
 
@@ -22,7 +23,7 @@ const flags = {};
 const remainingArgs = [];
 
 // Define which flags take values vs booleans
-const valueFlags = new Set(['log-level', 'delay', 'port']);
+const valueFlags = new Set(['log-level', 'delay', 'port', 'timeout', 'gui-port']);
 const booleanFlags = new Set(['browser', 'node', 'gui', 'show-browser', 'help', 'debug-flags']);
 
 for (let i = 0; i < args.length; i++) {
@@ -125,6 +126,7 @@ OPTIONS:
   -n, --node              Run only node tests
   -l, --log-level LEVEL   Set log level (0-4 or silent/minimal/normal/verbose/debug)
   -d, --delay MS          Add delay between tests in milliseconds
+  -t, --timeout MS        Set timeout for individual tests in milliseconds (default: 30000)
   -p, --port PORT         Set port for test server (default: 3000)
   -g, --gui               Launch GUI mode
   -w, --show-browser      Show browser window during tests
@@ -137,6 +139,7 @@ EXAMPLES:
   kempo-test                    # Run all tests
   kempo-test --browser          # Run only browser tests
   kempo-test -l verbose         # Run with verbose logging
+  kempo-test -t 60000           # Set 60-second timeout for tests
   kempo-test --gui              # Launch GUI mode
   kempo-test myComponent        # Run tests for 'myComponent' suite
   kempo-test myComponent myTest # Run specific test in specific suite

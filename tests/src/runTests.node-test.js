@@ -1,4 +1,4 @@
-import runTests from '../src/runTests.js';
+import runTests from '../../src/runTests.js';
 
 const mkSuite = () => ({
   beforeAll: async (log) => { log('before all'); },

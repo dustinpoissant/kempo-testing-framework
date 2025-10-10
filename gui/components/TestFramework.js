@@ -100,8 +100,8 @@ class TestFrameworkEl extends LitElement {
       const logsEl = el.renderRoot?.getElementById('logs');
       if (logsEl) logsEl.clear();
     } catch {}
-    const { showBrowser, delayMs } = getSettings();
-    const resp = await fetch(`/runTest?testFile=${encodeURIComponent(file)}&testNames=${encodeURIComponent(name)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`);
+    const { showBrowser, delayMs, timeoutMs } = getSettings();
+    const resp = await fetch(`/runTest?testFile=${encodeURIComponent(file)}&testNames=${encodeURIComponent(name)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}&timeoutMs=${Number(timeoutMs||30000)}`);
     let data = null;
     try { data = await resp.json(); } catch {}
     if(!resp.ok || (data && data.error)){
@@ -165,15 +165,15 @@ class TestFrameworkEl extends LitElement {
       if(fileLogsEl) fileLogsEl.clear();
     } catch {}
     
-    const { showBrowser, delayMs } = getSettings();
+    const { showBrowser, delayMs, timeoutMs } = getSettings();
     
     // For universal tests, run both environments
     if (isUniversal && file.endsWith('.test.js')) {
       try {
         // Run both Node and Browser tests
         const [nodeResp, browserResp] = await Promise.all([
-          fetch(`/runTest?testFile=${encodeURIComponent(file)}&environment=node&showBrowser=false&delayMs=${Number(delayMs||0)}`),
-          fetch(`/runTest?testFile=${encodeURIComponent(file)}&environment=browser&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`)
+          fetch(`/runTest?testFile=${encodeURIComponent(file)}&environment=node&showBrowser=false&delayMs=${Number(delayMs||0)}&timeoutMs=${Number(timeoutMs||30000)}`),
+          fetch(`/runTest?testFile=${encodeURIComponent(file)}&environment=browser&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}&timeoutMs=${Number(timeoutMs||30000)}`)
         ]);
         
         let nodeData = null, browserData = null;
@@ -305,7 +305,7 @@ class TestFrameworkEl extends LitElement {
     }
     
     // Original single-environment logic for non-universal tests
-    const resp = await fetch(`/runTest?testFile=${encodeURIComponent(file)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}`);
+    const resp = await fetch(`/runTest?testFile=${encodeURIComponent(file)}&showBrowser=${!!showBrowser}&delayMs=${Number(delayMs||0)}&timeoutMs=${Number(timeoutMs||30000)}`);
     let data = null;
     try { data = await resp.json(); } catch {}
     if(!resp.ok || (data && data.error)){

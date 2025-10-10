@@ -1,5 +1,5 @@
 import http from 'http';
-import { startServer, stopServer } from '../src/browserTestServer.js';
+import { startServer, stopServer } from '../../src/browserTestServer.js';
 
 const get = (port, path) => new Promise((resolve, reject) => {
   const req = http.request({ hostname: 'localhost', port, path, method: 'GET' }, (res) => {
@@ -31,9 +31,9 @@ export default {
     try {
       await startServer(port);
       const a = await get(port, '/runTests.js');
-      const b = await get(port, '/tests/counter.browser-test.js');
+      const b = await get(port, '/tests/components/counter.browser-test.js');
       const c = await get(port, '/does-not-exist.js');
-    log(`Statuses: /runTests.js=${a.status} /tests/counter.browser-test.js=${b.status} /does-not-exist.js=${c.status}`);
+    log(`Statuses: /runTests.js=${a.status} /tests/components/counter.browser-test.js=${b.status} /does-not-exist.js=${c.status}`);
       const ok = a.status === 200 && /export default|const wait/.test(a.body)
         && b.status === 200 && /Counter component/.test(b.body)
         && c.status === 404;

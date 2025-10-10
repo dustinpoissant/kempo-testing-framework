@@ -56,6 +56,26 @@ Kempo supports three types of test files:
 
 If your code is intended to run in both Node and the browser, you should write a single test file named `[name].test.js.`, otherwise use the environment specific file names `[name].browser-test.js` and/or `[name]node-test.js`.
 
+## Test Organization
+
+Kempo automatically discovers tests in the `tests` directory and supports organizing tests in subdirectories for better project structure. You can organize your tests however makes sense for your project:
+
+```
+tests/
+├── components/           # UI component tests
+│   ├── button.browser-test.js
+│   └── modal.browser-test.js
+├── api/                  # API-related tests  
+│   ├── auth.node-test.js
+│   └── users.node-test.js
+├── integration/          # Integration tests
+│   └── workflow.test.js
+└── utils/               # Utility function tests
+    └── helpers.test.js
+```
+
+The framework will recursively search all subdirectories within `tests/` to find test files, so you can nest directories as deeply as needed to match your project structure.
+
 ## Writing Tests
 
 ### Lifecycle Callbacks
@@ -272,6 +292,13 @@ Set the verbosity of output:
 - Specify a browser pause delay in milliseconds (applies before and after browser tests when the browser window is shown)
 - Example: `npx kempo-test -b --show-browser --delay 2000`
 
+**`--timeout` or `-t`**
+- Set the timeout for individual tests in milliseconds (default: 30000ms)
+- Tests that run longer than this timeout will be terminated and marked as failed
+- Minimum value: 1000ms (1 second)
+- Example: `npx kempo-test --timeout 60000` (60 second timeout)
+- Example: `npx kempo-test -t 10000` (10 second timeout)
+
 ### Combining Flags
 
 You can combine multiple flags for precise control:
@@ -288,6 +315,12 @@ npx kempo-test -l silent payment
 
 # Run browser tests with visible browser window, custom port and delay
 npx kempo-test -b --show-browser --port 8080 --delay 2000
+
+# Run tests with a custom timeout for slow-running tests
+npx kempo-test --timeout 60000
+
+# Run browser tests with custom timeout and visible browser
+npx kempo-test -b --show-browser --timeout 10000
 ```
 
 ## Running Specific or Filtered Tests

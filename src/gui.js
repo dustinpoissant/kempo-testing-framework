@@ -143,6 +143,7 @@ export default async (flags, args) => {
       const showBrowserParam = url.searchParams.get('showBrowser');
       const showBrowser = showBrowserParam === 'true';
       const delayMs = Math.max(0, parseInt(url.searchParams.get('delayMs')||'0', 10) || 0);
+      const timeoutMs = Math.max(1000, parseInt(url.searchParams.get('timeoutMs')||'30000', 10) || 30000);
       const environment = url.searchParams.get('environment'); // 'node', 'browser', or null for auto-detect
 
       try {
@@ -177,6 +178,7 @@ export default async (flags, args) => {
           port: 3001,
           logLevel: 2,
           delayMs,
+          timeoutMs,
           specificFiles: [testFile]
         });
 
@@ -246,8 +248,36 @@ export default async (flags, args) => {
         }
         
         const fileContent = await readFile(filePath, ext === '.png' || ext === '.jpg' || ext === '.jpeg' ? null : 'utf8');
-        res.writeHead(200, { 'Content-Type': contentType });
-        res.end(fileContent);
+        
+        // For index.html, inject initial settings from CLI flags
+        if (basePath === '/' && ext === '.html') {
+          const timeoutMs = Number.isFinite(parseInt(flags.timeout, 10)) ? Math.max(1000, parseInt(flags.timeout, 10)) : 30000;
+          const initialSettings = {
+            timeoutMs: timeoutMs
+          };
+          
+          // Inject settings into the HTML
+          const settingsScript = `<script>
+            // Apply initial CLI settings
+            if (typeof Storage !== "undefined") {
+              try {
+                const currentSettings = JSON.parse(localStorage.getItem('ktf_settings') || '{}');
+                const initialSettings = ${JSON.stringify(initialSettings)};
+                const mergedSettings = { ...currentSettings, ...initialSettings };
+                localStorage.setItem('ktf_settings', JSON.stringify(mergedSettings));
+              } catch (e) {
+                console.warn('Failed to set initial settings:', e);
+              }
+            }
+          </script>`;
+          
+          const modifiedContent = fileContent.replace('</head>', `${settingsScript}\n</head>`);
+          res.writeHead(200, { 'Content-Type': contentType });
+          res.end(modifiedContent);
+        } else {
+          res.writeHead(200, { 'Content-Type': contentType });
+          res.end(fileContent);
+        }
       } catch (error) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('File not found');

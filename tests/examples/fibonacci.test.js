@@ -1,5 +1,5 @@
 // Import the fibonacci utility functions
-import fibonacciUtils from './fibonacci.js';
+import fibonacciUtils from '../fixtures/fibonacci.js';
 
 const { fibonacci, fibonacciSequence, isFibonacci } = fibonacciUtils;
 

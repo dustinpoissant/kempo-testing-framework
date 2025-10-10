@@ -14,6 +14,7 @@ import path from 'path';
  * @param {number} options.port - Port for browser tests
  * @param {number} options.logLevel - Log level for browser tests
  * @param {number} options.delayMs - Optional delay in ms to apply for browser runs
+ * @param {number} options.timeoutMs - Timeout in ms for individual tests (default: 30000)
  * @param {Function} options.onNodeTestStart - Callback when a node test starts
  * @param {Function} options.onBrowserTestStart - Callback when a browser test starts
  * @param {string[]} options.specificFiles - Array of specific test files to run (overrides findTests)
@@ -28,6 +29,7 @@ export default async ({
   port = 3000,
   logLevel = 2,
   delayMs = 0,
+  timeoutMs = 30000,
   onNodeTestStart,
   onBrowserTestStart,
   specificFiles = null
@@ -65,7 +67,7 @@ export default async ({
       // Convert forward slashes back to OS-specific path separators for file system operations
       const normalizedFile = file.replace(/\//g, path.sep);
       const module = await import(`file://${path.resolve(process.cwd(), normalizedFile)}`);
-      nodeResults[file] = await runNodeTests(module, testFilter);
+      nodeResults[file] = await runNodeTests(module, testFilter, 0, timeoutMs);
     }
   }
 
@@ -82,7 +84,8 @@ export default async ({
         showBrowser,
         port,
         logLevel,
-        delayMs
+        delayMs,
+        timeoutMs
       });
     }
   }

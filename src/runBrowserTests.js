@@ -10,7 +10,8 @@ export default async ({
   showBrowser = false,
   port = 3000,
   logLevel,
-  delayMs = 0
+  delayMs = 0,
+  timeoutMs = 30000
 }) => {
   /*
    * Start Test Server
@@ -120,7 +121,7 @@ export default async ({
       throw new Error(`Browser test error: ${error}`);
     }
     
-    await page.waitForFunction(() => window.results !== undefined, { timeout: 20000 });
+    await page.waitForFunction(() => window.results !== undefined, { timeout: timeoutMs });
     const results = await page.evaluate(() => window.results);
 
     // Optional post-delay when a visible browser is requested
