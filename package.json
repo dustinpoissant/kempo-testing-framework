@@ -15,7 +15,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "kempo-css": "^1.0.2",
+    "kempo-css": "^1.3.11",
     "puppeteer": "^24.9.0"
   },
   "repository": {
