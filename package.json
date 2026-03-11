@@ -7,8 +7,8 @@
     "kempo-test": "./index.js"
   },
   "scripts": {
-    "tests": "npx kempo-test",
-    "tests:gui": "npx kempo-test --gui"
+    "test": "npx kempo-test",
+    "test:gui": "npx kempo-test --gui"
   },
   "keywords": [],
   "author": "",
