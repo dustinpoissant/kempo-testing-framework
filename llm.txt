@@ -1,0 +1,61 @@
+# Kempo Testing Framework
+
+## Install
+`npm install kempo-testing-framework --save-dev`
+
+## Test File Naming
+- `name.browser-test.js` — browser only
+- `name.node-test.js` — Node only
+- `name.test.js` — both environments
+
+Place files anywhere under `tests/` (recursive discovery).
+
+## Test File Structure
+```js
+import yourModule from '../src/yourModule.js';
+
+// Optional lifecycle exports (all async-capable, receive `log` function)
+export const beforeAll = async (log) => {};
+export const beforeEach = async (log) => {};
+export const afterEach = async (log) => {};
+export const afterAll = async (log) => {};
+
+// Optional: custom HTML page for browser tests (path relative to test file)
+export const page = './custom-page.html';
+
+// Required: default export is an object of named tests
+export default {
+  'test name': ({ pass, fail, log }) => {
+    // log(msg)  — emit a log message
+    // pass(msg) — mark test passed
+    // fail(msg) — mark test failed
+    pass('ok');
+  },
+  'async test': async ({ pass, fail, log }) => {
+    const result = await yourModule.fn();
+    result === 'expected' ? pass('ok') : fail(`got ${result}`);
+  }
+};
+```
+
+## CLI
+```
+npx kempo-test                  # run all tests
+npx kempo-test -b               # browser only
+npx kempo-test -n               # node only
+npx kempo-test --gui            # start web GUI
+npx kempo-test auth             # filter files by substring
+npx kempo-test auth login       # filter files then tests by substring
+npx kempo-test -b auth login    # combined
+```
+
+## Key Flags
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-b` / `--browser` | — | Browser tests only |
+| `-n` / `--node` | — | Node tests only |
+| `-l` / `--log-level` | normal | silent\|minimal\|normal\|verbose\|debug (or 0–4) |
+| `-p` / `--port` | 3000 | Browser test server port |
+| `-w` / `--show-browser` | headless | Show browser window |
+| `-d` / `--delay` | 0 | ms pause before/after browser tests (requires -w) |
+| `-t` / `--timeout` | 30000 | Per-test timeout in ms (min 1000) |
