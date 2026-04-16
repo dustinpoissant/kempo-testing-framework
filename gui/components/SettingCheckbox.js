@@ -34,7 +34,7 @@ window.customElements.define('ktf-setting-checkbox', class extends LitElement {
     const id = `setting-${this.name || 'checkbox'}`;
     return html`
       <div class="d-f mb" style="align-items: center">
-        <input id="${id}" type="checkbox" style="font-size: 1.35rem" .checked=${!!this.checked} @change=${(e) => this.onChange(e)} />
+        <input id="${id}" type="checkbox" .checked=${!!this.checked} @change=${(e) => this.onChange(e)} />
         <label for="${id}" style="line-height: 1.35rem" class="pb0">${this.label || ''}</label>
       </div>
     `;
