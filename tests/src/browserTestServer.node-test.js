@@ -1,8 +1,15 @@
 import http from 'http';
 import { startServer, stopServer } from '../../src/browserTestServer.js';
 
+/*
+  agent: false opts out of the global agent's connection pool. Node keeps that pool alive by
+  default, so a socket left over from an earlier test survives the server being stopped, and the
+  next test — which restarts a server on the same port — reuses a connection the previous server
+  already destroyed. The result is an intermittent "socket hang up" that has nothing to do with
+  what is being tested.
+*/
 const get = (port, path) => new Promise((resolve, reject) => {
-  const req = http.request({ hostname: 'localhost', port, path, method: 'GET' }, (res) => {
+  const req = http.request({ hostname: 'localhost', port, path, method: 'GET', agent: false }, (res) => {
     let data = '';
     res.on('data', chunk => { data += chunk.toString(); });
     res.on('end', () => resolve({ status: res.statusCode, body: data }));
