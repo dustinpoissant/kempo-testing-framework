@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer';
 import LOG_LEVELS from './utils/logLevels.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { readFile } from 'fs/promises';
 
 export default async ({
   testFile,
@@ -27,13 +28,18 @@ export default async ({
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  // Load the test module to check for 'page' export
+  // Detect a custom `page` export with a static text scan rather than importing the module in Node
+  // — a browser test file can freely import browser-only absolute specifiers (e.g. "/kempo-ui/...",
+  // meant to be resolved by an import map once actually loaded in the browser), which Node's own
+  // module resolver can't follow. Dynamically importing it here to peek at one export would throw on
+  // exactly those files and silently fall back to the default page instead of the one they asked for.
   let customPage = null;
   try {
     const testFilePath = path.resolve(process.cwd(), testFile.replace(/\//g, path.sep));
-    const testModule = await import(`file://${testFilePath}`);
-    if (typeof testModule.page === 'string') {
-      customPage = testModule.page;
+    const source = await readFile(testFilePath, 'utf8');
+    const match = source.match(/export\s+const\s+page\s*=\s*(['"])((?:(?!\1).)*)\1/);
+    if (match) {
+      customPage = match[2];
     }
   } catch (e) {
     // Ignore errors, fallback to default page
@@ -89,7 +95,7 @@ export default async ({
         content: `
           (async () => {
             try {
-              const runTestsModule = await import('/src/runTests.js');
+              const runTestsModule = await import('/runTests.js');
               const urlParams = new URLSearchParams(window.location.search);
               const testFile = urlParams.get('testFile') || '${testFile}';
               const testFilter = urlParams.get('testFilter') || '';
