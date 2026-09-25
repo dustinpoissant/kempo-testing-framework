@@ -28,7 +28,8 @@ export default {
   'test name': ({ pass, fail, log }) => {
     // log(msg)  — emit a log message
     // pass(msg) — mark test passed
-    // fail(msg) — mark test failed
+    // fail(msg) — mark test failed. Final: a later pass() is ignored. Does not stop the test;
+    //             return it from the test body, or throw, to stop (a throw also fails the test)
     pass('ok');
   },
   'async test': async ({ pass, fail, log }) => {

@@ -63,6 +63,15 @@ export default async ({
         tests[name]({
           log,
           pass: message => {
+            /*
+              A failure is final. `return fail()` from inside a nested callback only leaves that callback,
+              so the test carries on to its own trailing pass(); letting that overwrite the failure reported
+              success for a test that had failed. The call is still logged so the contradiction is visible.
+            */
+            if(result.passed === false){
+              log(`pass() ignored because the test already failed: ${message}`, 'log', 2);
+              return;
+            }
             result.passed = true;
             log(message, 'pass', 2); // was 3; make visible at NORMAL
           },

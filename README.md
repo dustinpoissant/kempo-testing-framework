@@ -195,6 +195,21 @@ export default {
 ```
 
 
+### How `pass` and `fail` Behave
+
+- `pass(message)` marks the test as passed and `fail(message)` marks it as failed. A test that throws also fails.
+- **A failure is final.** Once `fail()` has been called, a later `pass()` is ignored, and the ignored call is written to the test's logs so the contradiction is visible.
+- `fail()` does not stop the test. Stop it with `return fail(...)` from the test function itself, or by throwing.
+
+Be careful with `return fail(...)` inside a nested callback such as a helper, a promise executor or a `.then`. It only leaves that callback, so the test carries on to whatever follows. Throw an error there instead, which fails the test and stops it:
+
+```javascript
+await withTempDir(async (dir) => {
+  if(!(await exists(dir))) throw new Error('directory was not created');
+});
+pass('directory created');
+```
+
 ## Running Tests
 
 ### CLI (Command-Line Interface)
